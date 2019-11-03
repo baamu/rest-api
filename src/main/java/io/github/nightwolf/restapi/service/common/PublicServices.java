@@ -35,6 +35,7 @@ public class PublicServices {
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 
+    //add new download to the queue
     @PostMapping("/download/add")
     @ResponseBody
     public BasicReply addDownload(@RequestBody DownloadRequest downloadRequest) {
@@ -44,19 +45,30 @@ public class PublicServices {
         return new BasicReply("Success");
     }
 
-    @PostMapping("/download/getpercent")
-    @ResponseBody
-    public double getDownloadPercent(@RequestBody Download download) {
-        //test code
-        return downloads.get(downloads.indexOf(download)).getDownloadedSize();
-    }
-
+    //remove a download in waiting or downloading queue
     @PostMapping("/download/remove")
     @ResponseBody
     public BasicReply removeDownload(@RequestBody Download download) {
         //test code
         return downloads.remove(download) ? new BasicReply("Success") : new BasicReply("Failed!");
     }
+
+    //get all downloads of the user (previous downloads and waiting/ongoing downloads)
+    @GetMapping("/download/getall")
+    @ResponseBody
+    public List<Download> getAllDownloads() {
+        //test code
+        return downloads;
+    }
+
+    //get the downloaded percentage of a download
+    @GetMapping("/download/getpercent/{id}")
+    @ResponseBody
+    public double getDownloadPercent(@PathVariable String id) {
+        //test code
+        return downloads.get(downloads.indexOf(new Download(id))).getDownloadedSize();
+    }
+
 
 
 }

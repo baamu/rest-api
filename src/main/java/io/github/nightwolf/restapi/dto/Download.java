@@ -11,8 +11,13 @@ public class Download {
     private String url;
     private double downloadedSize;
     private double fileSize;
+    private boolean completed = false;
 
     public Download() {
+    }
+
+    public Download(String id) {
+        this.id = id;
     }
 
     public Download(String userId, String url) {
@@ -64,6 +69,14 @@ public class Download {
 
     public void setFileSize(double fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     @Override
