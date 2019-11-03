@@ -36,6 +36,8 @@ public class PublicServices {
 
 
     //add new download to the queue
+    //add the download to temp database and in the response, sent the id of it
+    //that id will be the id of that download until finished
     @PostMapping("/download/add")
     @ResponseBody
     public BasicReply addDownload(@RequestBody DownloadRequest downloadRequest) {
