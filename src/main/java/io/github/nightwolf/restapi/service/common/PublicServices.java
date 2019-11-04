@@ -4,6 +4,8 @@ import io.github.nightwolf.restapi.dto.BasicReply;
 import io.github.nightwolf.restapi.dto.Download;
 import io.github.nightwolf.restapi.dto.DownloadRequest;
 import io.github.nightwolf.restapi.dto.TempUser;
+import io.github.nightwolf.restapi.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,6 +20,13 @@ public class PublicServices {
 
     //for testing
     private List<Download> downloads = new ArrayList<>();
+    private UserRepository userRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public PublicServices(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     @PostMapping("/user/register")
     @ResponseBody
