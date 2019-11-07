@@ -1,10 +1,12 @@
-package io.github.nightwolf.restapi.service.common;
+package io.github.nightwolf.restapi.controller.common;
 
 import io.github.nightwolf.restapi.dto.BasicReply;
 import io.github.nightwolf.restapi.dto.Download;
 import io.github.nightwolf.restapi.dto.DownloadRequest;
 import io.github.nightwolf.restapi.dto.TempUser;
-import io.github.nightwolf.restapi.repository.UserRepository;
+import io.github.nightwolf.restapi.entity.User;
+import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,26 +16,25 @@ import java.util.List;
 /**
  * @author oshan
  */
+@CrossOrigin
 @RestController
 @RequestMapping("api/public")
-public class PublicServices {
+public class PublicController {
 
     //for testing
     private List<Download> downloads = new ArrayList<>();
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public PublicServices(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+    @Autowired
+    private UserDetailsServiceImpl userDetailsServiceImpl;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/user/register")
     @ResponseBody
-    public BasicReply registerUser(@RequestBody TempUser tempUser) {
-        System.out.println(tempUser);
-
-        return new BasicReply("Request sent for registration");
+    public BasicReply registerUser(@RequestBody User user) {
+        System.out.println(user);
+        userDetailsServiceImpl.registerUser(user);
+        return new BasicReply("Signed up!");
     }
 
 
@@ -64,7 +65,7 @@ public class PublicServices {
         return downloads.remove(download) ? new BasicReply("Success") : new BasicReply("Failed!");
     }
 
-    //get all downloads of the user (previous downloads and waiting/ongoing downloads)
+    //get all downloads of the service (previous downloads and waiting/ongoing downloads)
     @GetMapping("/download/getall")
     @ResponseBody
     public List<Download> getAllDownloads() {

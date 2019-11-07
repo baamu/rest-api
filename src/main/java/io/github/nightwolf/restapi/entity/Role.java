@@ -1,11 +1,7 @@
 package io.github.nightwolf.restapi.entity;
 
-import org.hibernate.annotations.GeneratorType;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -13,12 +9,26 @@ import java.io.Serializable;
  */
 
 @Entity
+@Table(name = "role")
 public class Role implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "role")
     private String role;
+
+    public Role() {
+    }
+
+    public Role(String role) {
+        this.role = role;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;

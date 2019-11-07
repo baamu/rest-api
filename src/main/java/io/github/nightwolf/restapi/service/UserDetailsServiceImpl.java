@@ -1,11 +1,15 @@
-package io.github.nightwolf.restapi.user;
+package io.github.nightwolf.restapi.service;
 
+import io.github.nightwolf.restapi.entity.Role;
 import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,10 +22,20 @@ import java.util.Collections;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private UserRepository userRepository;
+    @Autowired
+    @Qualifier(value = "userRepository")
+    private  UserRepository userRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void registerUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        Role role = new Role("ADMIN");
+        role.setId(1);
+
+        user.setRole(role);
+        userRepository.save(user);
     }
 
     @Override

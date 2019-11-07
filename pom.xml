@@ -60,11 +60,13 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-            <version>1.1.0.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>2.2.0.RELEASE</version>
         </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
@@ -92,6 +94,19 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.4.3.Final</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+
+
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.40</version>
+            <scope>runtime</scope>
+        </dependency>
+
 
     </dependencies>
 

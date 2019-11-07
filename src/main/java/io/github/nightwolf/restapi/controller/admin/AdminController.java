@@ -1,4 +1,4 @@
-package io.github.nightwolf.restapi.service.admin;
+package io.github.nightwolf.restapi.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.RestController;
  * @author oshan
  */
 @RestController
-public class AdminServices {
+public class AdminController {
 }
