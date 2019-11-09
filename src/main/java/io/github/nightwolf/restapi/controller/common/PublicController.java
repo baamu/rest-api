@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author oshan
  */
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("api/public")
 public class PublicController {
