@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,10 +40,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
+    @CrossOrigin(origins = "*")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = userRepository.findById(username).get();
-
+        User user = userRepository.findById(username).orElse(null);
         if(user == null) {
             throw new UsernameNotFoundException(username);
         }
