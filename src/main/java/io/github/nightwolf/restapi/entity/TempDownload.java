@@ -22,14 +22,14 @@ public class TempDownload {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "size")
+    @Column(name = "file_size")
     private double size;
 
     @JoinColumn(name = "added_by")
     @OneToOne
     private User user;
 
-    @JoinColumn(name = "type")
+    @JoinColumn(name = "file_type_id")
     @ManyToOne
     private DownloadType type;
 

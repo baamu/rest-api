@@ -15,8 +15,8 @@ public class DownloadType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "file_type")
+    private String file_type;
 
     @Column(name = "ext")
     private String ext;
@@ -32,12 +32,12 @@ public class DownloadType {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getFile_type() {
+        return file_type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setFile_type(String file_type) {
+        this.file_type = file_type;
     }
 
     public String getExt() {

@@ -1,5 +1,7 @@
 package io.github.nightwolf.restapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -22,6 +24,7 @@ public class User implements Serializable {
     private String name;
 
     @Column(name = "dob")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private Date dob;
 
     @Column(name = "username")
@@ -33,7 +36,7 @@ public class User implements Serializable {
     @Column(name = "nic")
     private String nic;
 
-    @JoinColumn(name = "role")
+    @JoinColumn(name = "role_id")
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Role.class)
     private Role role;
 

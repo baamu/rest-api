@@ -24,8 +24,8 @@ public class Download {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "size")
-    private double size;
+    @Column(name = "file_size")
+    private double file_size;
 
     @Column(name = "used_times")        //incremented when a user copies from repository
     private long used_times;
@@ -34,7 +34,7 @@ public class Download {
     @OneToOne
     private User user;
 
-    @JoinColumn(name = "type")
+    @JoinColumn(name = "file_type_id")
     @ManyToOne
     private DownloadType type;
 
@@ -70,12 +70,12 @@ public class Download {
         this.name = name;
     }
 
-    public double getSize() {
-        return size;
+    public double getFile_size() {
+        return file_size;
     }
 
-    public void setSize(double size) {
-        this.size = size;
+    public void setFile_size(double file_size) {
+        this.file_size = file_size;
     }
 
     public long getUsed_times() {

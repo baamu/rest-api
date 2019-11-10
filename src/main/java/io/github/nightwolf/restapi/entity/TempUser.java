@@ -1,5 +1,7 @@
 package io.github.nightwolf.restapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,6 +23,7 @@ public class TempUser {
     private String name;
 
     @Column(name = "dob")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private Date dob;
 
     @Column(name = "username")
