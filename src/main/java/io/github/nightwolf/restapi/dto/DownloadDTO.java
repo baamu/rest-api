@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author oshan
  */
-public class Download {
+public class DownloadDTO {
     private String id;
     private String userId;
     private String url;
@@ -13,19 +13,19 @@ public class Download {
     private double fileSize;
     private boolean completed = false;
 
-    public Download() {
+    public DownloadDTO() {
     }
 
-    public Download(String id) {
+    public DownloadDTO(String id) {
         this.id = id;
     }
 
-    public Download(String userId, String url) {
+    public DownloadDTO(String userId, String url) {
         this.userId = userId;
         this.url = url;
     }
 
-    public Download(String id, String userId, String url) {
+    public DownloadDTO(String id, String userId, String url) {
         this.id = id;
         this.userId = userId;
         this.url = url;
@@ -83,7 +83,7 @@ public class Download {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Download download = (Download) o;
+        DownloadDTO download = (DownloadDTO) o;
         return Objects.equals(id, download.id);
     }
 

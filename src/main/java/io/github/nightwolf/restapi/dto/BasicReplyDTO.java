@@ -3,13 +3,13 @@ package io.github.nightwolf.restapi.dto;
 /**
  * @author oshan
  */
-public class BasicReply {
+public class BasicReplyDTO {
     private String status;
 
-    public BasicReply() {
+    public BasicReplyDTO() {
     }
 
-    public BasicReply(String status) {
+    public BasicReplyDTO(String status) {
         this.status = status;
     }
 

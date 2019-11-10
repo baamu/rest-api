@@ -3,7 +3,7 @@ package io.github.nightwolf.restapi.dto;
 /**
  * @author oshan
  */
-public class DownloadRequest {
+public class DownloadRequestDTO {
     private String url;
     private String userId;
 
@@ -25,7 +25,7 @@ public class DownloadRequest {
 
     @Override
     public String toString() {
-        return "DownloadRequest{" +
+        return "DownloadRequestDTO{" +
                 "url='" + url + '\'' +
                 '}';
     }

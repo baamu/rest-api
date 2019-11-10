@@ -1,13 +1,17 @@
 package io.github.nightwolf.restapi.dto;
 
+import java.util.Date;
+
 /**
  * @author oshan
  */
 
-public class TempUser {
+public class TempUserDTO {
     private String email;
     private String name;
-    private String dob;
+    private Date dob;
+    private String username;
+    private String password;
     private String nic;
 
     public String getEmail() {
@@ -26,12 +30,28 @@ public class TempUser {
         this.name = name;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getNic() {
@@ -44,10 +64,12 @@ public class TempUser {
 
     @Override
     public String toString() {
-        return "TempUser{" +
+        return "TempUserDTO{" +
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
-                ", dob='" + dob + '\'' +
+                ", dob=" + dob +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", nic='" + nic + '\'' +
                 '}';
     }

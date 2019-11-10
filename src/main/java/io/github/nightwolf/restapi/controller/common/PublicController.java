@@ -1,9 +1,8 @@
 package io.github.nightwolf.restapi.controller.common;
 
-import io.github.nightwolf.restapi.dto.BasicReply;
-import io.github.nightwolf.restapi.dto.Download;
-import io.github.nightwolf.restapi.dto.DownloadRequest;
-import io.github.nightwolf.restapi.dto.TempUser;
+import io.github.nightwolf.restapi.dto.BasicReplyDTO;
+import io.github.nightwolf.restapi.dto.DownloadDTO;
+import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
 import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import java.util.List;
 public class PublicController {
 
     //for testing
-    private List<Download> downloads = new ArrayList<>();
+    private List<DownloadDTO> downloads = new ArrayList<>();
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -31,10 +30,10 @@ public class PublicController {
 
     @PostMapping("/user/register")
     @ResponseBody
-    public BasicReply registerUser(@RequestBody User user) {
+    public BasicReplyDTO registerUser(@RequestBody User user) {
         System.out.println(user);
         userDetailsServiceImpl.registerUser(user);
-        return new BasicReply("Signed up!");
+        return new BasicReplyDTO("Signed up!");
     }
 
 
@@ -50,25 +49,25 @@ public class PublicController {
     //that id will be the id of that download until finished
     @PostMapping("/download/add")
     @ResponseBody
-    public BasicReply addDownload(@RequestBody DownloadRequest downloadRequest) {
-        System.out.println("URL : "+ downloadRequest.getUrl());
-        downloads.add(new Download("D001", downloadRequest.getUserId() , downloadRequest.getUrl()));
+    public BasicReplyDTO addDownload(@RequestBody DownloadRequestDTO downloadRequestDTO) {
+        System.out.println("URL : "+ downloadRequestDTO.getUrl());
+        downloads.add(new DownloadDTO("D001", downloadRequestDTO.getUserId() , downloadRequestDTO.getUrl()));
         downloads.get(0).setDownloadedSize(40);
-        return new BasicReply("Success");
+        return new BasicReplyDTO("Success");
     }
 
     //remove a download in waiting or downloading queue
     @PostMapping("/download/remove")
     @ResponseBody
-    public BasicReply removeDownload(@RequestBody Download download) {
+    public BasicReplyDTO removeDownload(@RequestBody DownloadDTO download) {
         //test code
-        return downloads.remove(download) ? new BasicReply("Success") : new BasicReply("Failed!");
+        return downloads.remove(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
     }
 
     //get all downloads of the service (previous downloads and waiting/ongoing downloads)
     @GetMapping("/download/getall")
     @ResponseBody
-    public List<Download> getAllDownloads() {
+    public List<DownloadDTO> getAllDownloads() {
         //test code
         return downloads;
     }
@@ -78,7 +77,7 @@ public class PublicController {
     @ResponseBody
     public double getDownloadPercent(@PathVariable String id) {
         //test code
-        return downloads.get(downloads.indexOf(new Download(id))).getDownloadedSize();
+        return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }
 
 

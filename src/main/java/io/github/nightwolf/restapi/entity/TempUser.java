@@ -1,18 +1,17 @@
 package io.github.nightwolf.restapi.entity;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @author oshan
  */
-
 @Entity
-@Table(name = "users")
-public class User implements Serializable {
-
-    //The properties are for testing only. Will be changed in future
+@Table (name = "temp_user")
+public class TempUser {
 
     @Id
     @Column(name = "email")
@@ -32,10 +31,6 @@ public class User implements Serializable {
 
     @Column(name = "nic")
     private String nic;
-
-    @JoinColumn(name = "role")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Role.class)
-    private Role role;
 
     public String getEmail() {
         return email;
@@ -75,14 +70,6 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public String getNic() {
