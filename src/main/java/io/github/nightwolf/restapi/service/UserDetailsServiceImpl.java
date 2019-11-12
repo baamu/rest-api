@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public void registerUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-        Role role = new Role("ADMIN");
+        Role role = new Role("USER");
         role.setId(1);
 
         user.setRole(role);

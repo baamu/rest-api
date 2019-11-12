@@ -1,7 +1,6 @@
 package io.github.nightwolf.restapi.dto;
 
 import io.github.nightwolf.restapi.security.SecurityConstants;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -40,8 +39,6 @@ public class DownloadDTO implements Runnable{
 
     public DownloadDTO() {
         added_date = date_pattern.format(new Date());
-        fileName = "test.pdf";
-        downloadFile = new File(downPath+File.separator+fileName);
     }
 
     public DownloadDTO(String id) {
@@ -52,6 +49,10 @@ public class DownloadDTO implements Runnable{
         this();
         this.userId = userId;
         this.url = url;
+
+        String[] urlData = url.getFile().split("/");
+        fileName = urlData[urlData.length - 1];
+        downloadFile = new File(downPath+File.separator+fileName);
 
         try {
             setMetaData();

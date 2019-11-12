@@ -36,7 +36,7 @@ public class PublicController {
     @PostMapping("/user/register")
     @ResponseBody
     public BasicReplyDTO registerUser(@RequestBody User user) {
-        System.out.println(user);
+
         userDetailsServiceImpl.registerUser(user);
         return new BasicReplyDTO("Signed up!");
     }
@@ -66,8 +66,6 @@ public class PublicController {
         } catch (MalformedURLException e) {
             return new BasicReplyDTO("Error! Download URL failed!");
         }
-//        downloads.get(0).setDownloadedSize(40);
-
 
         return new BasicReplyDTO("Success");
     }
