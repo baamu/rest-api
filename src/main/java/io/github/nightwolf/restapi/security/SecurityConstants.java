@@ -9,4 +9,6 @@ public class SecurityConstants {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL = "/api/public/user/register";
+
+    public static final String FILE_DOWNLOAD_PATH = "C:\\Users\\oshan\\Desktop\\Downloads";
 }

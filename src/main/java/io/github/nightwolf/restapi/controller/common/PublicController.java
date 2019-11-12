@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
 public class PublicController {
 
     //for testing
-    private List<DownloadDTO> downloads = new ArrayList<>();
+    public static List<DownloadDTO> downloads = new ArrayList<>();
+
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -65,7 +66,7 @@ public class PublicController {
         } catch (MalformedURLException e) {
             return new BasicReplyDTO("Error! Download URL failed!");
         }
-        downloads.get(0).setDownloadedSize(40);
+//        downloads.get(0).setDownloadedSize(40);
 
 
         return new BasicReplyDTO("Success");
@@ -94,6 +95,20 @@ public class PublicController {
     public double getDownloadPercent(@PathVariable String id) {
         //test code
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
+    }
+
+    //this is only for testing
+    @GetMapping("/download/start")
+    @ResponseBody
+    public BasicReplyDTO startDownloads() {
+        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+
+        downloads.stream()
+                .filter(downloadDTO -> downloadDTO.getUserId().equals(id))
+                .collect(Collectors.toList())
+                .forEach(DownloadDTO::run);
+
+        return new BasicReplyDTO("Downloads started!");
     }
 
 
