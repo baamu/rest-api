@@ -40,14 +40,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(SecurityConstants.HEADER_STRING);
-        System.out.println(token);
+//        System.out.println(token);
         if(token != null) {
             String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()))
                     .build()
                     .verify(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
                     .getSubject();
 
-            System.out.println(user);
+//            System.out.println(user);
 
             if(user != null) {
                 return new UsernamePasswordAuthenticationToken(user,null,new ArrayList<>());

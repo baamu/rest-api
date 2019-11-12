@@ -1,5 +1,6 @@
 package io.github.nightwolf.restapi.dto;
 
+import java.net.URL;
 import java.util.Objects;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Objects;
 public class DownloadDTO {
     private String id;
     private String userId;
-    private String url;
+    private URL url;
     private double downloadedSize;
     private double fileSize;
     private boolean completed = false;
@@ -20,12 +21,12 @@ public class DownloadDTO {
         this.id = id;
     }
 
-    public DownloadDTO(String userId, String url) {
+    public DownloadDTO(String userId, URL url) {
         this.userId = userId;
         this.url = url;
     }
 
-    public DownloadDTO(String id, String userId, String url) {
+    public DownloadDTO(String id, String userId, URL url) {
         this.id = id;
         this.userId = userId;
         this.url = url;
@@ -47,11 +48,11 @@ public class DownloadDTO {
         this.userId = userId;
     }
 
-    public String getUrl() {
+    public URL getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
         this.url = url;
     }
 

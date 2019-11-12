@@ -6,11 +6,15 @@ import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
 import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author oshan
@@ -51,8 +55,19 @@ public class PublicController {
     @ResponseBody
     public BasicReplyDTO addDownload(@RequestBody DownloadRequestDTO downloadRequestDTO) {
         System.out.println("URL : "+ downloadRequestDTO.getUrl());
-        downloads.add(new DownloadDTO("D001", downloadRequestDTO.getUserId() , downloadRequestDTO.getUrl()));
+
+        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+
+        System.out.println(id);
+
+        try {
+            downloads.add(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+        } catch (MalformedURLException e) {
+            return new BasicReplyDTO("Error! Download URL failed!");
+        }
         downloads.get(0).setDownloadedSize(40);
+
+
         return new BasicReplyDTO("Success");
     }
 
@@ -69,7 +84,8 @@ public class PublicController {
     @ResponseBody
     public List<DownloadDTO> getAllDownloads() {
         //test code
-        return downloads;
+        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+        return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
     }
 
     //get the downloaded percentage of a download
