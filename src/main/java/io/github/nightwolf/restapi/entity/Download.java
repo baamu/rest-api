@@ -15,6 +15,9 @@ public class Download {
     @Column(name = "id")
     private long id;
 
+    @Column(name = "url")
+    private String url;
+
     @Column(name = "added_date")
     private Date added_date;
 
@@ -44,6 +47,14 @@ public class Download {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Date getAdded_date() {
