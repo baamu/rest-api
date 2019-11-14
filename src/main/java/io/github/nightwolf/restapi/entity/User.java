@@ -40,6 +40,25 @@ public class User implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Role.class)
     private Role role;
 
+    public User() {
+    }
+
+    public User(TempUser tempUser) {
+        this.email = tempUser.getEmail();
+        this.dob = tempUser.getDob();
+        this.username = tempUser.getUsername();
+        this.name = tempUser.getName();
+        this.password = tempUser.getPassword();
+        this.nic = tempUser.getNic();
+
+        Role role = new Role("USER");
+        role.setId(1);
+
+        this.role = role;
+    }
+
+
+
     public String getEmail() {
         return email;
     }

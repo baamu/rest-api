@@ -25,7 +25,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     @Qualifier(value = "userRepository")
-    private  UserRepository userRepository;
+    private  UserRepository userRepo;
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -36,13 +37,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         role.setId(1);
 
         user.setRole(role);
-        userRepository.save(user);
+        userRepo.save(user);
     }
 
     @Override
     @CrossOrigin(origins = "*")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findById(username).orElse(null);
+        User user = userRepo.findById(username).orElse(null);
         if(user == null) {
             throw new UsernameNotFoundException(username);
         }

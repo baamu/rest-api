@@ -30,7 +30,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/",SecurityConstants.SIGN_UP_URL).permitAll()
+                .antMatchers("/",SecurityConstants.SIGN_UP_URL,"/api/public/user/confirm-account","/api/public/user/hello").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")
@@ -54,9 +54,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:4200","/**"));
         config.setAllowedMethods(Arrays.asList("GET","POST"));
-
         source.registerCorsConfiguration("/**", config.applyPermitDefaultValues());
         return source;
     }

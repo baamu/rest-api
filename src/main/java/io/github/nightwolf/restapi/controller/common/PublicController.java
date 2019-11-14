@@ -3,12 +3,23 @@ package io.github.nightwolf.restapi.controller.common;
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
+import io.github.nightwolf.restapi.entity.ConfirmationToken;
+import io.github.nightwolf.restapi.entity.TempUser;
 import io.github.nightwolf.restapi.entity.User;
+import io.github.nightwolf.restapi.repository.ConfirmationTokenRepository;
+import io.github.nightwolf.restapi.repository.TempUserRepository;
+import io.github.nightwolf.restapi.repository.UserRepository;
+import io.github.nightwolf.restapi.service.EmailSenderService;
 import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +30,6 @@ import java.util.stream.Collectors;
 /**
  * @author oshan
  */
-@CrossOrigin("*")
 @RestController
 @RequestMapping("api/public")
 public class PublicController {
@@ -30,15 +40,82 @@ public class PublicController {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
+
+    @Autowired
+    @Qualifier(value = "userRepository")
+    private UserRepository userRepository;
+
+    @Autowired
+    @Qualifier(value = "tempUserRepository")
+    private TempUserRepository tempUserRepository;
+
+    @Autowired
+    @Qualifier(value = "confirmationTokenRepository")
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/user/register")
     @ResponseBody
-    public BasicReplyDTO registerUser(@RequestBody User user) {
+    public BasicReplyDTO registerUser(@RequestBody TempUser tempUser) {
+//        userDetailsServiceImpl.registerUser(user);
 
-        userDetailsServiceImpl.registerUser(user);
-        return new BasicReplyDTO("Signed up!");
+        User user = userRepository.findById(tempUser.getEmail()).orElse(null);
+        TempUser temp = tempUserRepository.findById(tempUser.getEmail()).orElse(null);
+
+        if(user != null) {
+            return new BasicReplyDTO("This email already exists!");
+        } else if (temp != null) {
+            return new BasicReplyDTO("Verification already sent for this email!");
+        }
+
+        tempUser.setPassword(bCryptPasswordEncoder.encode(tempUser.getPassword()));
+        tempUserRepository.save(tempUser);
+
+        tempUser = tempUserRepository.findById(tempUser.getEmail()).get();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(tempUser);
+        confirmationTokenRepository.save(confirmationToken);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(tempUser.getEmail());
+        mailMessage.setSubject("NightWolf Registration");
+        mailMessage.setFrom("nightwolfdownloadmanager@gmail.com");
+        mailMessage.setText("To confirm your account, please click on the below link : "
+                + "http://localhost:8080/api/public/user/confirm-account?token="
+                + confirmationToken.getToken()
+        );
+
+        emailSenderService.sendEmail(mailMessage);
+
+        return new BasicReplyDTO("Verification email sent to complete registration!");
+    }
+
+
+    @GetMapping("user/confirm-account")
+    @Transactional
+    public BasicReplyDTO confirmUser(@RequestParam("token") String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
+
+        if(confirmationToken != null) {
+            TempUser tempUser = tempUserRepository.findById(confirmationToken.getTempUser().getEmail()).orElse(null);
+            if (tempUser != null) {
+                User user = new User(tempUser);
+                userRepository.save(user);
+                tempUserRepository.deleteById(confirmationToken.getTempUser().getEmail());
+
+                return new BasicReplyDTO("accountVerified");
+            } else {
+                return new BasicReplyDTO("User does not exist! Please register first!");
+
+            }
+        } else {
+            return new BasicReplyDTO("The link is invalid or broken!");
+        }
     }
 
 

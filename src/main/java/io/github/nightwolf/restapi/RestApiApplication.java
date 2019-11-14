@@ -1,7 +1,9 @@
 package io.github.nightwolf.restapi;
 
+import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,10 @@ public class RestApiApplication {
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+
+    @Qualifier(value = "userRepository")
+    @Autowired
+    UserRepository userRepository;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
