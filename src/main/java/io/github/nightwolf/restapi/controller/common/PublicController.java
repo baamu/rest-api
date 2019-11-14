@@ -39,9 +39,6 @@ public class PublicController {
 
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-
-    @Autowired
     @Qualifier(value = "userRepository")
     private UserRepository userRepository;
 

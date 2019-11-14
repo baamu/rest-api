@@ -27,18 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Qualifier(value = "userRepository")
     private  UserRepository userRepo;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public void registerUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-
-        Role role = new Role("USER");
-        role.setId(1);
-
-        user.setRole(role);
-        userRepo.save(user);
-    }
 
     @Override
     @CrossOrigin(origins = "*")
