@@ -10,16 +10,14 @@ import io.github.nightwolf.restapi.repository.ConfirmationTokenRepository;
 import io.github.nightwolf.restapi.repository.TempUserRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.service.EmailSenderService;
-import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,6 +35,11 @@ public class PublicController {
     //for testing
     public static List<DownloadDTO> downloads = new ArrayList<>();
 
+    @Value("${server.address}")
+    private String ip;
+
+    @Value("${server.port}")
+    private String port;
 
     @Autowired
     @Qualifier(value = "userRepository")
@@ -59,7 +62,6 @@ public class PublicController {
     @PostMapping("/user/register")
     @ResponseBody
     public BasicReplyDTO registerUser(@RequestBody TempUser tempUser) {
-//        userDetailsServiceImpl.registerUser(user);
 
         User user = userRepository.findById(tempUser.getEmail()).orElse(null);
         TempUser temp = tempUserRepository.findById(tempUser.getEmail()).orElse(null);
@@ -83,7 +85,11 @@ public class PublicController {
         mailMessage.setSubject("NightWolf Registration");
         mailMessage.setFrom("nightwolfdownloadmanager@gmail.com");
         mailMessage.setText("To confirm your account, please click on the below link : "
-                + "http://localhost:8080/api/public/user/confirm-account?token="
+                + "http://"
+                +"localhost"
+                +":"
+                +"8080"
+                +"/api/public/user/confirm-account?token="
                 + confirmationToken.getToken()
         );
 
@@ -105,7 +111,7 @@ public class PublicController {
                 userRepository.save(user);
                 tempUserRepository.deleteById(confirmationToken.getTempUser().getEmail());
 
-                return new BasicReplyDTO("accountVerified");
+                return new BasicReplyDTO("Account Verified");
             } else {
                 return new BasicReplyDTO("User does not exist! Please register first!");
 

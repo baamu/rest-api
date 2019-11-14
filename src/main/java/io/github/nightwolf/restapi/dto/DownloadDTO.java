@@ -30,8 +30,7 @@ public class DownloadDTO implements Runnable{
     private File downloadFile;
     private String fileName;
 
-
-    private String downPath = SecurityConstants.FILE_DOWNLOAD_PATH;
+    private String documentPath=SecurityConstants.FILE_DOWNLOAD_PATH;
 
     {
         date_pattern = new SimpleDateFormat("yyyy/MM/dd");
@@ -52,7 +51,7 @@ public class DownloadDTO implements Runnable{
 
         String[] urlData = url.getFile().split("/");
         fileName = urlData[urlData.length - 1];
-        downloadFile = new File(downPath+File.separator+fileName);
+        downloadFile = new File(documentPath +File.separator+fileName);
 
         try {
             setMetaData();
