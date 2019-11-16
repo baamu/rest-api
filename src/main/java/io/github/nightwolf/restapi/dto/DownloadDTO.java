@@ -7,8 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,6 +28,8 @@ public class DownloadDTO implements Runnable{
     private File downloadFile;
     private String fileName;
 
+    private String fileType;
+
     private String documentPath=SecurityConstants.FILE_DOWNLOAD_PATH;
 
     {
@@ -49,15 +49,12 @@ public class DownloadDTO implements Runnable{
         this.userId = userId;
         this.url = url;
 
-        String[] urlData = url.getFile().split("/");
-        fileName = urlData[urlData.length - 1];
-        downloadFile = new File(documentPath +File.separator+fileName);
-
         try {
             setMetaData();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public DownloadDTO(String id, String userId, URL url) {
@@ -69,23 +66,40 @@ public class DownloadDTO implements Runnable{
     private void setMetaData() throws IOException {
         HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
-        fileSize = http.getContentLength(); //Bytes
+        String disposition = http.getHeaderField("Content-Disposition");
+        String contentType = http.getHeaderField("Content-Type");
 
-        System.out.println("File : "+downloadFile.getName());
-        System.out.println("File Size "+ fileSize +"Bytes");
+        System.out.println("Disposition : "+disposition);
 
-        System.out.println("Headers ");
-        System.out.println("/////////////////////////");
-
-        for(Map.Entry<String, List<String>> header : http.getHeaderFields().entrySet()) {
-            System.out.print(header.getKey() + " : ");
-            for (String s : header.getValue()) {
-                System.out.print(s + ", ");
-            }
-            System.out.println();
+        if(disposition != null) {
+            fileName = disposition.substring(disposition.indexOf("filename=") + 10, disposition.length() - 1);
+        } else {
+            String[] urlData = url.getFile().split("/");
+            fileName = urlData[urlData.length - 1];
         }
 
-        System.out.println("///////////////////////////");
+        downloadFile = new File(documentPath +File.separator+fileName);
+
+        fileSize = http.getContentLength(); //Bytes
+
+        fileType = contentType.split("/")[1];
+
+//        System.out.println("File Name : "+fileName);
+//        System.out.println("File Size : "+ fileSize +"Bytes");
+//        System.out.println("File type : "+ fileType);
+//
+//        System.out.println("Headers ");
+//        System.out.println("/////////////////////////");
+//
+//        for(Map.Entry<String, List<String>> header : http.getHeaderFields().entrySet()) {
+//            System.out.print(header.getKey() + " : ");
+//            for (String s : header.getValue()) {
+//                System.out.print(s + ", ");
+//            }
+//            System.out.println();
+//        }
+//
+//        System.out.println("///////////////////////////");
         http.disconnect();
     }
 
