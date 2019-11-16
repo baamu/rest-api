@@ -171,24 +171,27 @@ public class DownloadDTO implements Runnable{
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             BufferedInputStream inputStream = new BufferedInputStream(http.getInputStream());
             FileOutputStream fout = new FileOutputStream(downloadFile);
-            BufferedOutputStream bout = new BufferedOutputStream(fout,1024*1024);
-            byte[] buffer = new byte[1024*1024*5];
+            BufferedOutputStream bout = new BufferedOutputStream(fout,1024 * 1024 * 100);
+            byte[] buffer = new byte[1024 * 1024 * 5];
             int read;
             int readSize = 0;
 
-            while ((read = inputStream.read(buffer,0,1024*1024*5)) != -1) {
+            while ((read = inputStream.read(buffer)) != -1) {
                 bout.write(buffer,0,read);
                 downloadedSize += read;
                 readSize += read;
 
-                if(readSize >= 1024 * 1024 * 5)     //flushes data on each 5MB
+                if(readSize >= 1024 * 1024 * 100)     //flushes data on each 100MB
+                {
+                    readSize+=0;
                     bout.flush();
+                }
 
                 double downloadedPercent = (downloadedSize/fileSize) * 100;
-                System.out.println(String.format("Downloaded %.2f/%.2f : %.2f%%",downloadedSize,fileSize,downloadedPercent));
+                System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedPercent));
             }
 
-            System.out.println(String.format("Downloaded %.2f/%.2f : %.2f%%",downloadedSize,fileSize,downloadedSize/fileSize * 100));
+            System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedSize/fileSize * 100));
 
             System.out.println("Download completed!");
             bout.flush();
