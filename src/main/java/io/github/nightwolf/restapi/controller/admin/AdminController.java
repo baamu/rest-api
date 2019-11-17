@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/admin")
 public class AdminController {
 
-//    @CrossOrigin
     @GetMapping("/download/start")
     @ResponseBody
     public BasicReplyDTO startAllDownloads() {

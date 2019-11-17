@@ -14,8 +14,6 @@ import java.util.Date;
 @Table(name = "users")
 public class User implements Serializable {
 
-    //The properties are for testing only. Will be changed in future
-
     @Id
     @Column(name = "email")
     private String email;
