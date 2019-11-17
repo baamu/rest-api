@@ -5,6 +5,8 @@ import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author oshan
  */
@@ -18,5 +20,10 @@ public class AdminController {
         PublicController.downloads.forEach(DownloadDTO::run);
 
         return new BasicReplyDTO("Downloads started!");
+    }
+
+    @GetMapping("/download/getall")
+    public List<DownloadDTO> getAllDownloads() {
+        return PublicController.downloads;
     }
 }
