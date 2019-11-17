@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,8 +29,11 @@ import java.util.List;
  */
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    private UserDetailsServiceImpl userDetailsService;
+
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService) {
         super(authenticationManager);
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -58,9 +62,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
             System.out.println(user);
 
-            //need to set role here to grant admin access
-            List<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("ROLE_"+"USER"));
+            List<GrantedAuthority> authorities = new ArrayList<>(userDetailsService.loadUserByUsername(user).getAuthorities());
 
             if(user != null) {
                 return new UsernamePasswordAuthenticationToken(user,null,authorities);
