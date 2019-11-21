@@ -83,7 +83,7 @@ public class PublicController {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(tempUser.getEmail());
         mailMessage.setSubject("NightWolf Registration");
-        mailMessage.setFrom("nightwolfdownloadmanager@gmail.com");
+        mailMessage.setFrom("nightwolfdownloader@gmail.com");
         mailMessage.setText("To confirm your account, please click on the below link : "
                 + "http://"
                 +"localhost"
