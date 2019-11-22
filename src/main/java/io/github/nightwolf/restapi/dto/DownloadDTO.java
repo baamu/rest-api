@@ -20,10 +20,10 @@ public class DownloadDTO implements Runnable{
     private double fileSize;        //Bytes
     private boolean completed = false;
 
-    private SimpleDateFormat date_pattern;
+    private SimpleDateFormat datePattern;
 
     private String added_date;
-    private String downloaded_date;
+    private String downloadedDate;
 
     private File downloadFile;
     private String fileName;
@@ -33,11 +33,11 @@ public class DownloadDTO implements Runnable{
     private String documentPath=SecurityConstants.FILE_DOWNLOAD_PATH;
 
     {
-        date_pattern = new SimpleDateFormat("yyyy/MM/dd");
+        datePattern = new SimpleDateFormat("yyyy/MM/dd");
     }
 
     public DownloadDTO() {
-        added_date = date_pattern.format(new Date());
+        added_date = datePattern.format(new Date());
     }
 
     public DownloadDTO(String id) {

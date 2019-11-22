@@ -18,20 +18,20 @@ public class Download {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "added_date")
-    private Date added_date;
+    @Column(name = "addedDate")
+    private Date addedDate;
 
-    @Column(name = "downloaded_date")
-    private Date downloaded_date;
+    @Column(name = "downloadedDate")
+    private Date downloadedDate;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "file_size")
-    private double file_size;
+    @Column(name = "fileSize")
+    private double fileSize;
 
-    @Column(name = "used_times")        //incremented when a user copies from repository
-    private long used_times;
+    @Column(name = "usedTimes")        //incremented when a user copies from repository
+    private long usedTimes;
 
     @JoinColumn(name = "added_by")
     @OneToOne
@@ -57,20 +57,20 @@ public class Download {
         this.url = url;
     }
 
-    public Date getAdded_date() {
-        return added_date;
+    public Date getAddedDate() {
+        return addedDate;
     }
 
-    public void setAdded_date(Date added_date) {
-        this.added_date = added_date;
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
     }
 
-    public Date getDownloaded_date() {
-        return downloaded_date;
+    public Date getDownloadedDate() {
+        return downloadedDate;
     }
 
-    public void setDownloaded_date(Date downloaded_date) {
-        this.downloaded_date = downloaded_date;
+    public void setDownloadedDate(Date downloadedDate) {
+        this.downloadedDate = downloadedDate;
     }
 
     public String getName() {
@@ -81,20 +81,20 @@ public class Download {
         this.name = name;
     }
 
-    public double getFile_size() {
-        return file_size;
+    public double getFileSize() {
+        return fileSize;
     }
 
-    public void setFile_size(double file_size) {
-        this.file_size = file_size;
+    public void setFileSize(double fileSize) {
+        this.fileSize = fileSize;
     }
 
-    public long getUsed_times() {
-        return used_times;
+    public long getUsedTimes() {
+        return usedTimes;
     }
 
-    public void setUsed_times(long used_times) {
-        this.used_times = used_times;
+    public void setUsedTimes(long usedTimes) {
+        this.usedTimes = usedTimes;
     }
 
     public User getUser() {

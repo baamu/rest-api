@@ -19,8 +19,8 @@ public class TempDownload {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "added_date")
-    private Date added_date;
+    @Column(name = "addedDate")
+    private Date addedDate;
 
     @Column(name = "name")
     private String name;
@@ -52,12 +52,12 @@ public class TempDownload {
         this.url = url;
     }
 
-    public Date getAdded_date() {
-        return added_date;
+    public Date getAddedDate() {
+        return addedDate;
     }
 
-    public void setAdded_date(Date added_date) {
-        this.added_date = added_date;
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
     }
 
     public String getName() {

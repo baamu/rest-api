@@ -13,5 +13,5 @@ import java.util.List;
 
 @Repository(value = "downloadRepository")
 public interface DownloadRepository extends JpaRepository<Download, Integer> {
-    List<Download> findFirst25ByUserOrderByDownloaded_dateDesc(User user);
+    List<Download> findFirst25ByUserOrderByDownloadedDateDesc(User user);
 }

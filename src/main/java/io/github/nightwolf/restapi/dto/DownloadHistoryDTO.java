@@ -11,19 +11,19 @@ public class DownloadHistoryDTO {
     private long id;
     private String name;
     private String url;
-    private Date added_date;
-    private Date downloaded_date;
+    private Date addedDate;
+    private Date downloadedDate;
     private double file_size;
 
     public DownloadHistoryDTO() {
     }
 
-    public DownloadHistoryDTO(long id, String name, String url, Date added_date, Date downloaded_date, double file_size) {
+    public DownloadHistoryDTO(long id, String name, String url, Date addedDate, Date downloadedDate, double file_size) {
         this.id = id;
         this.name = name;
         this.url = url;
-        this.added_date = added_date;
-        this.downloaded_date = downloaded_date;
+        this.addedDate = addedDate;
+        this.downloadedDate = downloadedDate;
         this.file_size = file_size;
     }
 
@@ -31,9 +31,9 @@ public class DownloadHistoryDTO {
         this.id = download.getId();
         this.name = download.getName();
         this.url = download.getUrl();
-        this.added_date = download.getAdded_date();
-        this.downloaded_date = download.getDownloaded_date();
-        this.file_size = download.getFile_size();
+        this.addedDate = download.getAddedDate();
+        this.downloadedDate = download.getDownloadedDate();
+        this.file_size = download.getFileSize();
     }
 
     public long getId() {
@@ -60,20 +60,20 @@ public class DownloadHistoryDTO {
         this.url = url;
     }
 
-    public Date getAdded_date() {
-        return added_date;
+    public Date getAddedDate() {
+        return addedDate;
     }
 
-    public void setAdded_date(Date added_date) {
-        this.added_date = added_date;
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
     }
 
-    public Date getDownloaded_date() {
-        return downloaded_date;
+    public Date getDownloadedDate() {
+        return downloadedDate;
     }
 
-    public void setDownloaded_date(Date downloaded_date) {
-        this.downloaded_date = downloaded_date;
+    public void setDownloadedDate(Date downloadedDate) {
+        this.downloadedDate = downloadedDate;
     }
 
     public double getFile_size() {
@@ -90,8 +90,8 @@ public class DownloadHistoryDTO {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
-                ", added_date=" + added_date +
-                ", downloaded_date=" + downloaded_date +
+                ", addedDate=" + addedDate +
+                ", downloadedDate=" + downloadedDate +
                 ", file_size=" + file_size +
                 '}';
     }

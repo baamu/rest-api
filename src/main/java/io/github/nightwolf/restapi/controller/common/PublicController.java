@@ -210,7 +210,7 @@ public class PublicController {
     public List<DownloadHistoryDTO> getDownloadHistory() {
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
         User user = userRepository.findById(id).get();
-        return downloadRepository.findFirst25ByUserOrderByDownloaded_dateDesc(user)
+        return downloadRepository.findFirst25ByUserOrderByDownloadedDateDesc(user)
                 .stream()
                 .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
