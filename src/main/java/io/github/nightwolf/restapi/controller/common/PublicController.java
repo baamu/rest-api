@@ -2,11 +2,14 @@ package io.github.nightwolf.restapi.controller.common;
 
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
+import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
 import io.github.nightwolf.restapi.entity.ConfirmationToken;
+import io.github.nightwolf.restapi.entity.Download;
 import io.github.nightwolf.restapi.entity.TempUser;
 import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.repository.ConfirmationTokenRepository;
+import io.github.nightwolf.restapi.repository.DownloadRepository;
 import io.github.nightwolf.restapi.repository.TempUserRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.service.EmailSenderService;
@@ -48,6 +51,10 @@ public class PublicController {
     @Autowired
     @Qualifier(value = "tempUserRepository")
     private TempUserRepository tempUserRepository;
+
+    @Autowired
+    @Qualifier(value = "downloadRepository")
+    private DownloadRepository downloadRepository;
 
     @Autowired
     @Qualifier(value = "confirmationTokenRepository")
@@ -173,6 +180,16 @@ public class PublicController {
     public double getDownloadPercent(@PathVariable String id) {
         //test code
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
+    }
+
+    @GetMapping("/download/history")
+    @ResponseBody
+    public List<DownloadHistoryDTO> getDownloadHistory() {
+        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+        return downloadRepository.findByUser(id)
+                .stream()
+                .map(DownloadHistoryDTO::new)
+                .collect(Collectors.toList());
     }
 
     //this is only for testing
