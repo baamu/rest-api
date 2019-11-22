@@ -66,6 +66,10 @@ public class PublicController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * @param tempUser user to be registered to the system
+     * @return BasicReplyDTO with Success or Fail message
+     */
     @PostMapping("/user/register")
     @ResponseBody
     public BasicReplyDTO registerUser(@RequestBody TempUser tempUser) {
@@ -106,6 +110,10 @@ public class PublicController {
     }
 
 
+    /**
+     * @param token Confirmation Token in the query string
+     * @return BasicReplyDTO with account verification message
+     */
     @GetMapping("user/confirm-account")
     @Transactional
     public BasicReplyDTO confirmUser(@RequestParam("token") String token) {
@@ -157,6 +165,10 @@ public class PublicController {
         return new BasicReplyDTO("Success");
     }
 
+    /**
+     * @param download on going download to be removed from queue
+     * @return BasicReplyDTO with Success or Failed message
+     */
     //remove a download in waiting or downloading queue
     @PostMapping("/download/remove")
     @ResponseBody
@@ -165,6 +177,9 @@ public class PublicController {
         return downloads.remove(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
     }
 
+    /**
+     * @return On going downloads of the user
+     */
     //get all downloads of the service (previous downloads and waiting/ongoing downloads)
     @GetMapping("/download/getall")
     @ResponseBody
@@ -174,6 +189,10 @@ public class PublicController {
         return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
     }
 
+    /**
+     * @param id id of the on going download
+     * @return downloaded size of the file
+     */
     //get the downloaded percentage of a download
     @GetMapping("/download/getpercent/{id}")
     @ResponseBody
@@ -182,11 +201,16 @@ public class PublicController {
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }
 
+
+    /**
+     * @return Last 25 downloads of the user
+     */
     @GetMapping("/download/history")
     @ResponseBody
     public List<DownloadHistoryDTO> getDownloadHistory() {
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-        return downloadRepository.findByUser(id)
+        User user = userRepository.findById(id).get();
+        return downloadRepository.findFirst25ByUserOrderByDownloaded_dateDesc(user)
                 .stream()
                 .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
@@ -205,7 +229,6 @@ public class PublicController {
 
         return new BasicReplyDTO("Downloads started!");
     }
-
 
 
 }

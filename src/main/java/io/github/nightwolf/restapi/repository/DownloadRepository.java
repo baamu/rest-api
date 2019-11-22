@@ -1,6 +1,7 @@
 package io.github.nightwolf.restapi.repository;
 
 import io.github.nightwolf.restapi.entity.Download;
+import io.github.nightwolf.restapi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,5 @@ import java.util.List;
 
 @Repository(value = "downloadRepository")
 public interface DownloadRepository extends JpaRepository<Download, Integer> {
-    List<Download> findByUser(String added_by);
+    List<Download> findFirst25ByUserOrderByDownloaded_dateDesc(User user);
 }
