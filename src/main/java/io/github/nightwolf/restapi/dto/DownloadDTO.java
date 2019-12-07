@@ -32,6 +32,8 @@ public class DownloadDTO implements Runnable{
 
     private String documentPath=SecurityConstants.FILE_DOWNLOAD_PATH;
 
+    private volatile boolean isExit = false;
+
     {
         datePattern = new SimpleDateFormat("yyyy/MM/dd");
     }
@@ -151,18 +153,22 @@ public class DownloadDTO implements Runnable{
         this.completed = completed;
     }
 
+    public String getAddedDate() {
+        return added_date;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DownloadDTO download = (DownloadDTO) o;
-        return Objects.equals(id, download.id);
+        DownloadDTO that = (DownloadDTO) o;
+        return Objects.equals(url, that.url);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id);
+        return Objects.hash(url);
     }
 
     @Override
@@ -173,10 +179,10 @@ public class DownloadDTO implements Runnable{
             FileOutputStream fout = new FileOutputStream(downloadFile);
             BufferedOutputStream bout = new BufferedOutputStream(fout,1024 * 1024 * 100);
             byte[] buffer = new byte[1024 * 1024 * 5];
-            int read;
+            int read = 0;
             int readSize = 0;
 
-            while ((read = inputStream.read(buffer)) != -1) {
+            while ( !isExit || (read = inputStream.read(buffer)) != -1) {
                 bout.write(buffer,0,read);
                 downloadedSize += read;
                 readSize += read;
@@ -191,18 +197,27 @@ public class DownloadDTO implements Runnable{
                 System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedPercent));
             }
 
-            System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedSize/fileSize * 100));
 
-            System.out.println("Download completed!");
+            if(isExit) {
+                System.out.println("Download Stopped!");
+            } else {
+                System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedSize/fileSize * 100));
+                System.out.println("Download completed!");
+                completed = true;
+            }
+
             bout.flush();
             bout.close();
             fout.close();
             inputStream.close();
             http.disconnect();
 
-            completed = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void exit() {
+        isExit = true;
     }
 }
