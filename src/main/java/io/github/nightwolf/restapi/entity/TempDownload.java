@@ -22,6 +22,9 @@ public class TempDownload {
     @Column(name = "addedDate")
     private Date addedDate;
 
+    @Column(name = "lastModified")
+    private String lastModified;
+
     @Column(name = "name")
     private String name;
 

@@ -24,6 +24,7 @@ public class DownloadDTO implements Runnable{
 
     private String added_date;
     private String downloadedDate;
+    private String lastModified;        //set value when the download is added to queue (at download manager)
 
     private File downloadFile;
     private String fileName;
@@ -63,6 +64,20 @@ public class DownloadDTO implements Runnable{
         this.id = id;
         this.userId = userId;
         this.url = url;
+    }
+
+    public DownloadDTO(String id, String userId, URL url, double fileSize, String added_date, String lastModified, String fileName) {
+        this.id = id;
+        this.userId = userId;
+        this.url = url;
+        this.fileSize = fileSize;
+        this.added_date = added_date;
+        this.lastModified = lastModified;
+        this.fileName = fileName;
+
+        downloadFile = new File(documentPath +File.separator+fileName);
+        String d[] = fileName.split("\\.");
+        fileType = d[d.length-1];
     }
 
     private void setMetaData() throws IOException {
@@ -153,6 +168,14 @@ public class DownloadDTO implements Runnable{
         this.completed = completed;
     }
 
+    public String getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(String lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public String getAddedDate() {
         return added_date;
     }
@@ -181,6 +204,15 @@ public class DownloadDTO implements Runnable{
             byte[] buffer = new byte[1024 * 1024 * 5];
             int read = 0;
             int readSize = 0;
+
+            long bytes = downloadFile.getAbsoluteFile().length();
+
+            //check whether the file was partially downloaded before
+            if(bytes > 0L) {
+                downloadedSize = bytes;
+                http.setRequestProperty("Range", "bytes="+bytes+"-");
+                http.setRequestProperty("If-Range", lastModified);
+            }
 
             while ( !isExit || (read = inputStream.read(buffer)) != -1) {
                 bout.write(buffer,0,read);
