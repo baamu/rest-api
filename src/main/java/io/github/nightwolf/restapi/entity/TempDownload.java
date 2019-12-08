@@ -63,6 +63,14 @@ public class TempDownload {
         this.addedDate = addedDate;
     }
 
+    public String getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(String lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public String getName() {
         return name;
     }

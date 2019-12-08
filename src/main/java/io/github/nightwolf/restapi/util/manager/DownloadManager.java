@@ -34,6 +34,11 @@ public class DownloadManager {
 
     public boolean removeDownload(DownloadDTO downloadDTO) {
         downloadsQueue.remove(downloadDTO);
+
+        if(!downloader.getQueue().contains(downloadDTO)) {
+            return true;
+        }
+
         if(isStarted) {
             return downloader.remove(downloadDTO);
         }

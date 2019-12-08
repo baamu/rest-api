@@ -1,14 +1,12 @@
 package io.github.nightwolf.restapi.controller.admin;
 
-import io.github.nightwolf.restapi.controller.common.PublicController;
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
-import io.github.nightwolf.restapi.util.manager.DownloadManager;
+import io.github.nightwolf.restapi.util.scheduler.TaskScheduler;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author oshan
@@ -17,10 +15,10 @@ import java.util.stream.Collectors;
 @RequestMapping("api/admin")
 public class AdminController {
 
-    public final static DownloadManager downloadManager;
+    public final static TaskScheduler TASK_SCHEDULER;
 
     static {
-        downloadManager = new DownloadManager();
+        TASK_SCHEDULER = new TaskScheduler();
     }
 
     @GetMapping("/download/start")
@@ -28,14 +26,14 @@ public class AdminController {
     public BasicReplyDTO startAllDownloads() {
 //        PublicController.downloads.forEach(DownloadDTO::run);
 
-        downloadManager.start();
+        TASK_SCHEDULER.startDownloads();
         return new BasicReplyDTO("Downloads started!");
     }
 
     @GetMapping("/download/getall")
     public List<DownloadDTO> getAllDownloads() {
 //        return PublicController.downloads;
-        return new ArrayList<>(downloadManager.getDownloadsQueue());
+        return new ArrayList<>(TASK_SCHEDULER.getDownloadsQueue());
     }
 
 }

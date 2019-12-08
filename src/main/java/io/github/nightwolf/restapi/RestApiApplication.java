@@ -1,6 +1,8 @@
 package io.github.nightwolf.restapi;
 
 import io.github.nightwolf.restapi.repository.DownloadRepository;
+import io.github.nightwolf.restapi.repository.DownloadTypeRepository;
+import io.github.nightwolf.restapi.repository.TempDownloadRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,14 @@ public class RestApiApplication {
     @Autowired
     @Qualifier(value = "downloadRepository")
     DownloadRepository downloadRepository;
+
+    @Qualifier(value = "tempDownloadRepository")
+    @Autowired
+    private TempDownloadRepository tempDownloadRepository;
+
+    @Autowired
+    @Qualifier(value = "downloadTypeRepository")
+    private DownloadTypeRepository downloadTypeRepository;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

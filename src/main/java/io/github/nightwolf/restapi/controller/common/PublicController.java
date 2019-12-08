@@ -6,7 +6,6 @@ import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
 import io.github.nightwolf.restapi.entity.ConfirmationToken;
-import io.github.nightwolf.restapi.entity.Download;
 import io.github.nightwolf.restapi.entity.TempUser;
 import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.repository.ConfirmationTokenRepository;
@@ -159,7 +158,7 @@ public class PublicController {
 
         try {
 //            downloads.add(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
-            AdminController.downloadManager.addDownload(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+            AdminController.TASK_SCHEDULER.addDownload(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
         } catch (MalformedURLException e) {
             return new BasicReplyDTO("Error! Download URL failed!");
         }
@@ -177,7 +176,7 @@ public class PublicController {
     public BasicReplyDTO removeDownload(@RequestBody DownloadDTO download) {
         //test code
 //        return downloads.remove(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
-        return AdminController.downloadManager.removeDownload(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
+        return AdminController.TASK_SCHEDULER.removeDownload(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
     }
 
     /**
@@ -190,7 +189,7 @@ public class PublicController {
         //test code
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
 //        return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
-        return AdminController.downloadManager.getDownloadsQueue().stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
+        return AdminController.TASK_SCHEDULER.getDownloadsQueue().stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
     }
 
     /**
@@ -203,7 +202,7 @@ public class PublicController {
     public double getDownloadPercent(@PathVariable String id) {
         //test code
 //        return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
-        List<DownloadDTO> downloads = new ArrayList<>(AdminController.downloadManager.getDownloadsQueue());
+        List<DownloadDTO> downloads = new ArrayList<>(AdminController.TASK_SCHEDULER.getDownloadsQueue());
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }
 

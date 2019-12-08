@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository(value = "tempDownloadRepository")
 public interface TempDownloadRepository extends CrudRepository<TempDownload, Integer> {
+    void deleteByUrl(String url);
 }

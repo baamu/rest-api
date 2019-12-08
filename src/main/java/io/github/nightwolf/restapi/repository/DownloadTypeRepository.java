@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository(value = "downloadTypeRepository")
 public interface DownloadTypeRepository extends CrudRepository<DownloadType, Integer> {
+    DownloadType findByFileType(String fileType);
 }
