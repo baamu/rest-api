@@ -1,5 +1,6 @@
 package io.github.nightwolf.restapi.controller.common;
 
+import io.github.nightwolf.restapi.controller.admin.AdminController;
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
@@ -157,7 +158,8 @@ public class PublicController {
         System.out.println(id);
 
         try {
-            downloads.add(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+//            downloads.add(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+            AdminController.downloadManager.addDownload(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
         } catch (MalformedURLException e) {
             return new BasicReplyDTO("Error! Download URL failed!");
         }
@@ -174,7 +176,8 @@ public class PublicController {
     @ResponseBody
     public BasicReplyDTO removeDownload(@RequestBody DownloadDTO download) {
         //test code
-        return downloads.remove(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
+//        return downloads.remove(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
+        return AdminController.downloadManager.removeDownload(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
     }
 
     /**
@@ -186,7 +189,8 @@ public class PublicController {
     public List<DownloadDTO> getAllDownloads() {
         //test code
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-        return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
+//        return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
+        return AdminController.downloadManager.getDownloadsQueue().stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
     }
 
     /**
@@ -198,6 +202,8 @@ public class PublicController {
     @ResponseBody
     public double getDownloadPercent(@PathVariable String id) {
         //test code
+//        return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
+        List<DownloadDTO> downloads = new ArrayList<>(AdminController.downloadManager.getDownloadsQueue());
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }
 

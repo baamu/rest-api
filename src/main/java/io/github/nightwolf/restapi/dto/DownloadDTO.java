@@ -214,7 +214,7 @@ public class DownloadDTO implements Runnable{
                 http.setRequestProperty("If-Range", lastModified);
             }
 
-            while ( !isExit || (read = inputStream.read(buffer)) != -1) {
+            while ( !isExit && (read = inputStream.read(buffer)) != -1) {
                 bout.write(buffer,0,read);
                 downloadedSize += read;
                 readSize += read;

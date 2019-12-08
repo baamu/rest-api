@@ -32,11 +32,13 @@ public class DownloadManager {
         }
     }
 
-    public void removeDownload(DownloadDTO downloadDTO) {
+    public boolean removeDownload(DownloadDTO downloadDTO) {
         downloadsQueue.remove(downloadDTO);
         if(isStarted) {
-            downloader.remove(downloadDTO);
+            return downloader.remove(downloadDTO);
         }
+
+        return false;
     }
 
     public DownloadDTO getDownload(DownloadDTO downloadDTO) {
@@ -45,6 +47,10 @@ public class DownloadManager {
                 .filter(d->d.equals(downloadDTO))
                 .collect(Collectors.toList())
                 .get(0);
+    }
+
+    public Queue<DownloadDTO> getDownloadsQueue() {
+        return downloadsQueue;
     }
 
     private void init() {
