@@ -13,6 +13,8 @@ import io.github.nightwolf.restapi.repository.DownloadRepository;
 import io.github.nightwolf.restapi.repository.TempUserRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.service.EmailSenderService;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +24,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -150,15 +157,30 @@ public class PublicController {
     @PostMapping("/download/add")
     @ResponseBody
     public BasicReplyDTO addDownload(@RequestBody DownloadRequestDTO downloadRequestDTO) {
-        System.out.println("URL : "+ downloadRequestDTO.getUrl());
+        String link = downloadRequestDTO.getUrl();
+
+        if(link.isEmpty()) {
+            return new BasicReplyDTO("Error! Download URL failed!");
+        }
+
+        System.out.println("URL : "+ link);
 
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
 
         System.out.println(id);
 
         try {
-//            downloads.add(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
-            AdminController.TASK_SCHEDULER.addDownload(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+            if(link.contains("www.youtube.com")) {
+                URL url = getYoutubeDownloadLink(link);
+                if(url != null) {
+                    AdminController.TASK_SCHEDULER.addDownload(new DownloadDTO(id , url, getYoutubeTitle(link)));
+                } else {
+                    return new BasicReplyDTO("Error! Download URL failed!");
+                }
+            } else {
+                AdminController.TASK_SCHEDULER.addDownload(new DownloadDTO(id , new URL(downloadRequestDTO.getUrl())));
+            }
+
         } catch (MalformedURLException e) {
             return new BasicReplyDTO("Error! Download URL failed!");
         }
@@ -188,7 +210,6 @@ public class PublicController {
     public List<DownloadDTO> getAllDownloads() {
         //test code
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-//        return downloads.stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
         return AdminController.TASK_SCHEDULER.getDownloadsQueue().stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
     }
 
@@ -201,7 +222,6 @@ public class PublicController {
     @ResponseBody
     public double getDownloadPercent(@PathVariable String id) {
         //test code
-//        return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
         List<DownloadDTO> downloads = new ArrayList<>(AdminController.TASK_SCHEDULER.getDownloadsQueue());
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }
@@ -233,6 +253,101 @@ public class PublicController {
                 .forEach(DownloadDTO::run);
 
         return new BasicReplyDTO("Downloads started!");
+    }
+
+    private String getYoutubeTitle(String link) {
+        try {
+            return Jsoup.connect(link).get().title()+".mp4";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String getHTMLLink(String link) {
+        HttpURLConnection conn = null;
+        StringBuilder contents = new StringBuilder();
+        try {
+            conn = (HttpURLConnection) new URL(link).openConnection();
+//            conn.setConnectTimeout(CONNECT_TIMEOUT);
+//            conn.setReadTimeout(READ_TIMEOUT);
+
+            InputStream is = conn.getInputStream();
+
+            String enc = conn.getContentEncoding();
+
+            if (enc == null) {
+                Pattern p = Pattern.compile("charset=(.*)");
+                Matcher m = p.matcher(conn.getHeaderField("Content-Type"));
+                if (m.find()) {
+                    enc = m.group(1);
+                }
+            }
+
+            if (enc == null)
+                enc = "UTF-8";
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, enc));
+
+            String line;
+
+
+            while ((line = br.readLine()) != null) {
+                contents.append(line);
+                contents.append("\n");
+            }
+
+            br.close();
+
+        }catch (IOException ex) {
+
+        } finally {
+            assert conn != null;
+            conn.disconnect();
+        }
+
+        return contents.toString();
+    }
+
+    private URL getYoutubeDownloadLink(String link) {
+        List<String> urlList = new ArrayList<>();
+        Pattern urlencod = Pattern.compile("\"url_encoded_fmt_stream_map\":\"([^\"]*)\"");
+        Matcher urlencodMatch = urlencod.matcher(getHTMLLink(link));
+
+        if (urlencodMatch.find()) {
+            String url_encoded_fmt_stream_map;
+            url_encoded_fmt_stream_map = urlencodMatch.group(1);
+            Pattern encod = Pattern.compile("url=(.*)");
+            Matcher encodMatch = encod.matcher(url_encoded_fmt_stream_map);
+            if (encodMatch.find()) {
+                String sline = encodMatch.group(1);
+                String[] urlStrings = sline.split("url=");
+                for (String urlString : urlStrings) {
+                    String url = null;
+                    urlString = StringEscapeUtils.unescapeJava(urlString);
+                    Pattern link2 = Pattern.compile("([^&,]*)[&,]");
+                    Matcher linkMatch = link2.matcher(urlString);
+                    if (linkMatch.find()) {
+                        url = linkMatch.group(1);
+                        try {
+                            url = URLDecoder.decode(url, "UTF8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    urlList.add(url);
+                }
+            }
+        }
+
+        try {
+            return new URL(urlList.get(0));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 

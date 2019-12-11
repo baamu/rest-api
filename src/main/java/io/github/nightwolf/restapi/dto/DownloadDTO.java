@@ -60,6 +60,20 @@ public class DownloadDTO implements Runnable{
 
     }
 
+    public DownloadDTO(String userId, URL url, String fileName) {
+        this();
+        this.userId = userId;
+        this.url = url;
+        this.fileName = fileName;
+
+        try {
+            setMetaData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public DownloadDTO(String id, String userId, URL url) {
         this.id = id;
         this.userId = userId;
@@ -88,12 +102,16 @@ public class DownloadDTO implements Runnable{
 
         System.out.println("Disposition : "+disposition);
 
-        if(disposition != null) {
-            fileName = disposition.substring(disposition.indexOf("filename=") + 10, disposition.length() - 1);
-        } else {
-            String[] urlData = url.getFile().split("/");
-            fileName = urlData[urlData.length - 1];
+        if(fileName == null) {
+            if(disposition != null) {
+                fileName = disposition.substring(disposition.indexOf("filename=") + 10, disposition.length() - 1);
+            } else {
+                String[] urlData = url.getFile().split("/");
+                fileName = urlData[urlData.length - 1];
+            }
         }
+
+        fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
 
         downloadFile = new File(documentPath +File.separator+fileName);
 
@@ -213,7 +231,9 @@ public class DownloadDTO implements Runnable{
     @Override
     public void run() {
         try {
+//            System.setProperty("http.agent", "Chrome");
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.addRequestProperty("User-Agent", "Mozilla/4.76");
             BufferedInputStream inputStream = new BufferedInputStream(http.getInputStream());
             FileOutputStream fout = new FileOutputStream(downloadFile);
             BufferedOutputStream bout = new BufferedOutputStream(fout,1024 * 1024 * 100);

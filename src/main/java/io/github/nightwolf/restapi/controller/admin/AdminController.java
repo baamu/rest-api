@@ -18,6 +18,7 @@ public class AdminController {
     public final static TaskScheduler TASK_SCHEDULER;
 
     static {
+        System.setProperty("http.agent", "Chrome");
         TASK_SCHEDULER = new TaskScheduler();
     }
 

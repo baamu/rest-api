@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -65,7 +64,7 @@ public class TaskScheduler {
 
     public TaskScheduler() {
         initialize();
-        populateUncompletedDownloads();
+//        populateUncompletedDownloads();
     }
 
     private void initialize() {
