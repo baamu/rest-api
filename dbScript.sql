@@ -76,7 +76,7 @@ INSERT INTO role(role) VALUES("ADMIN");
 INSERT INTO role(role) VALUES("USER");
 
 INSERT INTO users VALUES(
-	"admin@nightwolfdownloadmanager.com",
+	"admin@nightwolf.com",
 	"admin",
 	"1980-12-20",
 	"admin",
@@ -85,7 +85,7 @@ INSERT INTO users VALUES(
 );
 
 INSERT INTO users VALUES(
-	"user@nightwolfdownloadmanager.com",
+	"user@nightwolf.com",
 	"user",
 	"1980-12-21",
 	"user",
