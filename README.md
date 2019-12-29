@@ -33,10 +33,10 @@
 * Or build it from source using maven and execute the package jar file
 
 ## Default user credentials :
-    | Email | Password  | Role  |
-    |:----------|:----------|:------|
-    | admin@nightwolf.com     | admin     | Admin |
-    | user@nightwolf.com      | user      | user  |
+    | Email                 | Password  | Role  |
+    |:----------------------|:----------|:------|
+    | admin@nightwolf.com   | admin     | Admin |
+    | user@nightwolf.com    | user      | user  |
 
 > Note : passwords are hashed using bcrypt encoding
 
