@@ -18,12 +18,14 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -146,6 +148,49 @@ public class PublicController {
 
     /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +                                                               +
+    +                       Repository                              +
+    +                                                               +
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    @GetMapping("/repository/get-trending")
+    @ResponseBody
+    public List<DownloadHistoryDTO> getTrendingFiles() {
+        List<DownloadHistoryDTO> downloads;
+
+        downloads = downloadRepository.findTop10ByOrderByUsedTimes()
+                .stream()
+                .map(DownloadHistoryDTO::new)
+                .collect(Collectors.toList());
+
+        return downloads;
+    }
+
+    @GetMapping("repository/{dir}")
+    @ResponseBody
+    public List<DownloadHistoryDTO> getDownloadedFiles(@PathVariable String dir, @RequestParam(value = "page", defaultValue = "1") int page) {
+        int directory = -1;
+
+        switch (dir) {
+            case "documents" : directory = 1; break;
+            case "images" : directory = 2; break;
+            case "videos" : directory = 3; break;
+            case "programs" : directory = 4; break;
+            case "other" : directory = 5; break;
+        }
+
+        if(directory == -1) {
+            return null;
+        }
+
+        return downloadRepository.findAllByType(directory, PageRequest.of(page, 10))
+                .stream()
+                .map(DownloadHistoryDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+    /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +                                                               +
     +               User Specific Downloads                         +
     +                                                               +
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -210,7 +255,11 @@ public class PublicController {
     public List<DownloadDTO> getAllDownloads() {
         //test code
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-        return AdminController.TASK_SCHEDULER.getDownloadsQueue().stream().filter(downloadDTO -> downloadDTO.getUserId().equals(id)).collect(Collectors.toList());
+        return AdminController.TASK_SCHEDULER.getDownloadsQueue()
+                .stream()
+                .parallel()
+                .filter(downloadDTO -> downloadDTO.getUserId().equals(id))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -242,18 +291,18 @@ public class PublicController {
     }
 
     //this is only for testing
-    @GetMapping("/download/start")
-    @ResponseBody
-    public BasicReplyDTO startDownloads() {
-        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-
-        downloads.stream()
-                .filter(downloadDTO -> downloadDTO.getUserId().equals(id))
-                .collect(Collectors.toList())
-                .forEach(DownloadDTO::run);
-
-        return new BasicReplyDTO("Downloads started!");
-    }
+//    @GetMapping("/download/start")
+//    @ResponseBody
+//    public BasicReplyDTO startDownloads() {
+//        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+//
+//        downloads.stream()
+//                .filter(downloadDTO -> downloadDTO.getUserId().equals(id))
+//                .collect(Collectors.toList())
+//                .forEach(DownloadDTO::run);
+//
+//        return new BasicReplyDTO("Downloads started!");
+//    }
 
     private String getYoutubeTitle(String link) {
         try {

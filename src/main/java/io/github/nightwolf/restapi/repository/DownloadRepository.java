@@ -2,6 +2,7 @@ package io.github.nightwolf.restapi.repository;
 
 import io.github.nightwolf.restapi.entity.Download;
 import io.github.nightwolf.restapi.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,6 @@ import java.util.List;
 @Repository(value = "downloadRepository")
 public interface DownloadRepository extends JpaRepository<Download, Integer> {
     List<Download> findFirst25ByUserOrderByDownloadedDateDesc(User user);
+    List<Download> findTop10ByOrderByUsedTimes();
+    List<Download> findAllByType(int type, Pageable pageable);
 }

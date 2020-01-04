@@ -65,6 +65,7 @@ CREATE TABLE download(
 	downloaded_date DATE NOT NULL,
 	name VARCHAR(100) NOT NULL,
 	file_size DECIMAL(6,2) NOT NULL,
+	used_times INT NOT NULL,
 	added_by VARCHAR(100) NOT NULL,
 	file_type_id INT NOT NULL,
 	FOREIGN KEY (added_by) REFERENCES users (email) ON DELETE CASCADE ON UPDATE CASCADE,

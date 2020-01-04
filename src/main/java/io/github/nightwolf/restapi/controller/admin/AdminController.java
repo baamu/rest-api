@@ -31,10 +31,25 @@ public class AdminController {
         return new BasicReplyDTO("Downloads started!");
     }
 
-    @GetMapping("/download/getall")
-    public List<DownloadDTO> getAllDownloads() {
+    @GetMapping("/download/get-all")
+    public List<DownloadDTO> getAllOnGoingDownloads() {
 //        return PublicController.downloads;
         return new ArrayList<>(TASK_SCHEDULER.getDownloadsQueue());
+    }
+
+    @GetMapping("/download/stop-all")
+    @ResponseBody
+    public BasicReplyDTO stopAllDownloads() {
+        TASK_SCHEDULER.terminateDownloads();
+        return new BasicReplyDTO("Downloading terminated!");
+    }
+
+    @PostMapping("/download/stop")
+    @ResponseBody
+    public BasicReplyDTO stopDownload(@RequestBody DownloadDTO download) {
+        return TASK_SCHEDULER.removeDownload(download)
+                ? new BasicReplyDTO("Download terminated!")
+                : new BasicReplyDTO("Download termination failed!");
     }
 
 }
