@@ -81,6 +81,7 @@ INSERT INTO users VALUES(
 	"1980-12-20",
 	"admin",
 	"$2y$12$K.ps7FXPQpI0P7Q/WhV4VekEIqWfmTjBlsBsJi.kb/eQ2yYl9xl0S",
+	"123456789V",
 	"1"
 );
 
@@ -90,5 +91,6 @@ INSERT INTO users VALUES(
 	"1980-12-21",
 	"user",
 	"$2y$12$9lWxDMLsbyh24AWBV3M9iunlUcBsLrxdgwFxu4KlmOpl.K/N0QNPy",
+	"012345678V",
 	"2"
 );
