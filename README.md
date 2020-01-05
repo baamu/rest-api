@@ -1,6 +1,6 @@
 ![banner](https://raw.githubusercontent.com/baamu/rest-api/master/resources/Banner.png)
 
-# NigthWolf Download Manager RESTful API
+# NightWolf Download Manager RESTful API
 
 ## Dependencies
 1) MySQL
