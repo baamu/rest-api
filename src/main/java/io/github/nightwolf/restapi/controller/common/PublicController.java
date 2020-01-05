@@ -5,13 +5,8 @@ import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
-import io.github.nightwolf.restapi.entity.ConfirmationToken;
-import io.github.nightwolf.restapi.entity.TempUser;
-import io.github.nightwolf.restapi.entity.User;
-import io.github.nightwolf.restapi.repository.ConfirmationTokenRepository;
-import io.github.nightwolf.restapi.repository.DownloadRepository;
-import io.github.nightwolf.restapi.repository.TempUserRepository;
-import io.github.nightwolf.restapi.repository.UserRepository;
+import io.github.nightwolf.restapi.entity.*;
+import io.github.nightwolf.restapi.repository.*;
 import io.github.nightwolf.restapi.service.EmailSenderService;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -64,6 +59,10 @@ public class PublicController {
     @Autowired
     @Qualifier(value = "downloadRepository")
     private DownloadRepository downloadRepository;
+
+    @Autowired
+    @Qualifier(value = "downloadTypeRepository")
+    private DownloadTypeRepository downloadTypeRepository;
 
     @Autowired
     @Qualifier(value = "confirmationTokenRepository")
@@ -168,15 +167,11 @@ public class PublicController {
     @GetMapping("repository/{dir}")
     @ResponseBody
     public List<DownloadHistoryDTO> getDownloadedFiles(@PathVariable String dir, @RequestParam(value = "page", defaultValue = "1") int page) {
+        DownloadType type = downloadTypeRepository.findByFileType(dir);
         int directory = -1;
 
-        switch (dir) {
-            case "documents" : directory = 1; break;
-            case "images" : directory = 2; break;
-            case "audios" : directory = 3; break;
-            case "videos" : directory = 4; break;
-            case "programs" : directory = 5; break;
-            case "other" : directory = 6; break;
+        if(type != null) {
+            directory = type.getId();
         }
 
         if(directory == -1) {

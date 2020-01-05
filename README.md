@@ -71,7 +71,7 @@
 
 
 ## TODO :
-1) Implement repository search per client request ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-On_Going-Green?style=flat-square)
+1) Implement repository search per client request ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 2) Implement copy files from repository ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square)
 3) Save added downloads in temp_download ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-On_Going-Green?style=flat-square)
 4) Fix setting download paths in a different property file ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
