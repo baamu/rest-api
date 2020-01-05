@@ -18,9 +18,6 @@ public class DownloadType {
     @Column(name = "fileType")
     private String fileType;
 
-    @Column(name = "ext")
-    private String ext;
-
     @Column(name = "defaultPath")
     private String defaultPath;
 
@@ -38,14 +35,6 @@ public class DownloadType {
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
-    }
-
-    public String getExt() {
-        return ext;
-    }
-
-    public void setExt(String ext) {
-        this.ext = ext;
     }
 
     public String getDefaultPath() {

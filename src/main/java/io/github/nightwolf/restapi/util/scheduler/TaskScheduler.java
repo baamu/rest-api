@@ -11,6 +11,7 @@ import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.util.manager.DownloadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author oshan
  */
+@Component(value = "taskScheduler")
 public class TaskScheduler {
 
     private static final DownloadManager DOWNLOAD_MANAGER = new DownloadManager();
@@ -47,10 +49,6 @@ public class TaskScheduler {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
     @Autowired
-    @Qualifier(value = "tempDownloadRepository")
-    private static TempDownloadRepository tempDownloadRepository;
-
-    @Autowired
     @Qualifier(value = "downloadRepository")
     private static DownloadRepository downloadRepository;
 
@@ -58,13 +56,54 @@ public class TaskScheduler {
     @Qualifier(value = "userRepository")
     private static UserRepository userRepository;
 
-    @Autowired
-    @Qualifier(value = "downloadTypeRepository")
-    private static DownloadTypeRepository downloadTypeRepository;
+    private DownloadTypeRepository downloadTypeRepository;
 
-    public TaskScheduler() {
+    private TempDownloadRepository tempDownloadRepository;
+
+    private String documentRepoPath;
+    private String imgRepoPath;
+    private String audRepoPath;
+    private String vidRepoPath;
+    private String prgmRepoPath;
+    private String othrRepoPath;
+
+
+    public String getDownloadPath(String contentType) {
+        if (contentType.contains("image/")) {
+            return imgRepoPath;
+        } else if (contentType.contains("audio/") || contentType.contains("music/")) {
+            return audRepoPath;
+        } else if (contentType.contains("video/")) {
+            return vidRepoPath;
+        } else if(contentType.contains("text/")) {
+            return documentRepoPath;
+        } else if(contentType.contains("application/")) {
+            if(contentType.contains("pdf") || contentType.contains("msword") || contentType.contains("excel")) {
+                return documentRepoPath;
+            } else if(contentType.contains("x-gzip") || contentType.contains("x-compressed") || contentType.contains("zip") || contentType.contains("x-zip")) {
+                return othrRepoPath;
+            } else {
+                return prgmRepoPath;
+            }
+        } else {
+            return othrRepoPath;
+        }
+    }
+
+    @Autowired
+    public TaskScheduler(@Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository) {
+        this.downloadTypeRepository = downloadTypeRepository;
+        this.tempDownloadRepository = tempDownloadRepository;
+
+        documentRepoPath = downloadTypeRepository.findByFileType("documents").getDefaultPath();
+        imgRepoPath = downloadTypeRepository.findByFileType("images").getDefaultPath();
+        audRepoPath = downloadTypeRepository.findByFileType("audios").getDefaultPath();
+        vidRepoPath = downloadTypeRepository.findByFileType("videos").getDefaultPath();
+        prgmRepoPath = downloadTypeRepository.findByFileType("programs").getDefaultPath();
+        othrRepoPath = downloadTypeRepository.findByFileType("other").getDefaultPath();
+
         initialize();
-//        populateUncompletedDownloads();
+        populateUncompletedDownloads();
     }
 
     private void initialize() {
@@ -149,7 +188,7 @@ public class TaskScheduler {
     }
 
     //remove downloadDTO from queue and temp_download table and add to download table
-    public static void notifyDownloadFinish(DownloadDTO downloadDTO) {
+    public void notifyDownloadFinish(DownloadDTO downloadDTO) {
         Download download = new Download();
         try {
             download.setAddedDate(FORMATTER.parse(downloadDTO.getAddedDate()));

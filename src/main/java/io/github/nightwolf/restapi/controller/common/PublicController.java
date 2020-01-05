@@ -173,9 +173,10 @@ public class PublicController {
         switch (dir) {
             case "documents" : directory = 1; break;
             case "images" : directory = 2; break;
-            case "videos" : directory = 3; break;
-            case "programs" : directory = 4; break;
-            case "other" : directory = 5; break;
+            case "audios" : directory = 3; break;
+            case "videos" : directory = 4; break;
+            case "programs" : directory = 5; break;
+            case "other" : directory = 6; break;
         }
 
         if(directory == -1) {
@@ -394,8 +395,9 @@ public class PublicController {
             return new URL(urlList.get(0));
         } catch (MalformedURLException e) {
             e.printStackTrace();
+        } catch (IndexOutOfBoundsException ex) {
+            return null;
         }
-
         return null;
     }
 

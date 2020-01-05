@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -30,19 +31,19 @@ public class RestApiApplication {
     @Qualifier(value = "downloadRepository")
     DownloadRepository downloadRepository;
 
-    @Qualifier(value = "tempDownloadRepository")
-    @Autowired
-    private TempDownloadRepository tempDownloadRepository;
-
     @Autowired
     @Qualifier(value = "downloadTypeRepository")
-    private DownloadTypeRepository downloadTypeRepository;
+    DownloadTypeRepository downloadTypeRepository;
+
+    @Autowired
+    @Qualifier(value = "tempDownloadRepository")
+    private TempDownloadRepository tempDownloadRepository;
+
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     public static void main(String[] args) {
         SpringApplication.run(RestApiApplication.class, args);

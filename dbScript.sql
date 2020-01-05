@@ -41,7 +41,6 @@ CREATE TABLE users(
 CREATE TABLE download_type(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	file_type VARCHAR(12) NOT NULL,
-	ext VARCHAR(6) NOT NULL,
 	default_path VARCHAR(255) NOT NULL
 );
 
@@ -49,7 +48,7 @@ CREATE TABLE temp_download(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	url VARCHAR(255) NOT NULL,
 	added_date DATE NOT NULL,
-	lastModified VARCHAR(100) NOT NULL,
+	last_modified VARCHAR(100) NOT NULL,
 	name VARCHAR(100) NOT NULL,
 	file_size DECIMAL(8,2) NOT NULL,
 	added_by VARCHAR(100) NOT NULL,
@@ -94,4 +93,30 @@ INSERT INTO users VALUES(
 	"$2y$12$9lWxDMLsbyh24AWBV3M9iunlUcBsLrxdgwFxu4KlmOpl.K/N0QNPy",
 	"012345678V",
 	"2"
+);
+
+
+INSERT INTO download_type (file_type, default_path) VALUES (
+  "documents",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Documents"
+),
+(
+  "images",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Pictures"
+),
+(
+  "audios",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Audios"
+),
+(
+  "videos",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Videos"
+),
+(
+  "programs",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Programs"
+),
+(
+  "other",
+  "C:\\Users\\abc\\Desktop\\Downloads\\Other"
 );

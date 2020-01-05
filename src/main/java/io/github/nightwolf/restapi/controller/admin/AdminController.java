@@ -3,6 +3,8 @@ package io.github.nightwolf.restapi.controller.admin;
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.util.scheduler.TaskScheduler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -15,11 +17,15 @@ import java.util.List;
 @RequestMapping("api/admin")
 public class AdminController {
 
-    public final static TaskScheduler TASK_SCHEDULER;
+    public static TaskScheduler TASK_SCHEDULER;
 
     static {
         System.setProperty("http.agent", "Chrome");
-        TASK_SCHEDULER = new TaskScheduler();
+    }
+
+    @Autowired
+    AdminController(TaskScheduler taskScheduler) {
+        TASK_SCHEDULER = taskScheduler;
     }
 
     @GetMapping("/download/start")

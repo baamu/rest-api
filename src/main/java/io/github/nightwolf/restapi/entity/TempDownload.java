@@ -19,10 +19,10 @@ public class TempDownload {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "addedDate")
+    @Column(name = "added_date")
     private Date addedDate;
 
-    @Column(name = "lastModified")
+    @Column(name = "last_modified")
     private String lastModified;
 
     @Column(name = "name")

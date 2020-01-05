@@ -1,6 +1,8 @@
 package io.github.nightwolf.restapi.dto;
 
+import io.github.nightwolf.restapi.controller.admin.AdminController;
 import io.github.nightwolf.restapi.security.SecurityConstants;
+import io.github.nightwolf.restapi.util.scheduler.TaskScheduler;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -65,7 +67,7 @@ public class DownloadDTO implements Runnable{
         this.userId = userId;
         this.url = url;
         this.fileName = fileName;
-
+        documentPath = AdminController.TASK_SCHEDULER.getDownloadPath("video/");
         try {
             setMetaData();
         } catch (IOException e) {
@@ -87,9 +89,9 @@ public class DownloadDTO implements Runnable{
         this.fileSize = fileSize;
         this.added_date = added_date;
         this.lastModified = lastModified;
-        this.fileName = fileName;
-
-        downloadFile = new File(documentPath +File.separator+fileName);
+//        this.fileName = fileName;
+//
+//        downloadFile = new File(documentPath +File.separator+fileName);
         String d[] = fileName.split("\\.");
         fileType = d[d.length-1];
     }
@@ -109,6 +111,8 @@ public class DownloadDTO implements Runnable{
                 String[] urlData = url.getFile().split("/");
                 fileName = urlData[urlData.length - 1];
             }
+
+            documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(contentType);
         }
 
         fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
