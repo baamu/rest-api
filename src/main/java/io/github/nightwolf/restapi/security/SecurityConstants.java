@@ -11,4 +11,5 @@ public class SecurityConstants {
     public static final String SIGN_UP_URL = "/api/public/user/register";
 
     public static final String FILE_DOWNLOAD_PATH = "C:\\Users\\oshan\\Desktop\\Downloads\\Documents";
+    public static final String REPOSITORY_BASE_PATH = "C:\\Users\\oshan\\Desktop\\Downloads";
 }

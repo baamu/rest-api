@@ -5,7 +5,10 @@ import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
-import io.github.nightwolf.restapi.entity.*;
+import io.github.nightwolf.restapi.entity.ConfirmationToken;
+import io.github.nightwolf.restapi.entity.DownloadType;
+import io.github.nightwolf.restapi.entity.TempUser;
+import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.repository.*;
 import io.github.nightwolf.restapi.service.EmailSenderService;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -20,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -168,13 +170,11 @@ public class PublicController {
     @ResponseBody
     public List<DownloadHistoryDTO> getDownloadedFiles(@PathVariable String dir, @RequestParam(value = "page", defaultValue = "1") int page) {
         DownloadType type = downloadTypeRepository.findByFileType(dir);
-        int directory = -1;
+        int directory;
 
         if(type != null) {
             directory = type.getId();
-        }
-
-        if(directory == -1) {
+        } else {
             return null;
         }
 

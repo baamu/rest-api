@@ -9,6 +9,7 @@ import io.github.nightwolf.restapi.repository.DownloadTypeRepository;
 import io.github.nightwolf.restapi.repository.TempDownloadRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.util.manager.DownloadManager;
+import io.github.nightwolf.restapi.util.manager.RepositoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class TaskScheduler {
 
     private static final DownloadManager DOWNLOAD_MANAGER = new DownloadManager();
+    private static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
 
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
 
@@ -43,6 +45,14 @@ public class TaskScheduler {
     private static final int DOWNLOAD_END_HOUR = 8;
     private static final int DOWNLOAD_END_MIN = 0;
     private static final int DOWNLOAD_END_SEC = 0;
+
+    private static final int CLEANING_START_HOUR = 22;
+    private static final int CLEANING_START_MIN = 0;
+    private static final int CLEANING_START_SEC = 0;
+
+    private static final int CLEANING_END_HOUR = 23;
+    private static final int CLEANING_END_MIN = 0;
+    private static final int CLEANING_END_SEC = 0;
 
     private static final String ZONE_ID = "Asia/Colombo";
 
