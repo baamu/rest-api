@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -387,11 +384,16 @@ public class PublicController {
         }
 
         try {
-            return new URL(urlList.get(0));
+            if(urlList.get(0) == null) {
+                return null;
+            }
+            return new URL(URLEncoder.encode(urlList.get(0), "UTF-8"));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IndexOutOfBoundsException ex) {
             return null;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
         return null;
     }

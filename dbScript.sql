@@ -46,11 +46,11 @@ CREATE TABLE download_type(
 
 CREATE TABLE temp_download(
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	url VARCHAR(255) NOT NULL,
+	url LONGTEXT NOT NULL,
 	added_date DATE NOT NULL,
 	last_modified VARCHAR(100) NOT NULL,
 	name VARCHAR(100) NOT NULL,
-	file_size DECIMAL(8,2) NOT NULL,
+	file_size DECIMAL(18,2) NOT NULL,
 	added_by VARCHAR(100) NOT NULL,
 	file_type_id INT NOT NULL,
 	FOREIGN KEY (added_by) REFERENCES users (email) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -59,11 +59,11 @@ CREATE TABLE temp_download(
 
 CREATE TABLE download(
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	url VARCHAR(255) NOT NULL,
+	url LONGTEXT NOT NULL,
 	added_date DATE NOT NULL,
 	downloaded_date DATE NOT NULL,
 	name VARCHAR(100) NOT NULL,
-	file_size DECIMAL(6,2) NOT NULL,
+	file_size DECIMAL(18,2) NOT NULL,
 	used_times INT NOT NULL,
 	added_by VARCHAR(100) NOT NULL,
 	file_type_id INT NOT NULL,

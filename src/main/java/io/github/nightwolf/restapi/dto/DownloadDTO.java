@@ -30,7 +30,9 @@ public class DownloadDTO implements Runnable{
     private File downloadFile;
     private String fileName;
 
-    private String fileType;
+    private String ext;
+
+    private String contentType;
 
     private String documentPath=SecurityConstants.FILE_DOWNLOAD_PATH;
 
@@ -92,14 +94,14 @@ public class DownloadDTO implements Runnable{
 //
 //        downloadFile = new File(documentPath +File.separator+fileName);
         String d[] = fileName.split("\\.");
-        fileType = d[d.length-1];
+        ext = d[d.length-1];
     }
 
     private void setMetaData() throws IOException {
         HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
         String disposition = http.getHeaderField("Content-Disposition");
-        String contentType = http.getHeaderField("Content-Type");
+        this.contentType = http.getHeaderField("Content-Type");
 
         System.out.println("Disposition : "+disposition);
 
@@ -111,7 +113,7 @@ public class DownloadDTO implements Runnable{
                 fileName = urlData[urlData.length - 1];
             }
 
-            documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(contentType);
+            documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(this.contentType);
         }
 
         fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
@@ -120,11 +122,11 @@ public class DownloadDTO implements Runnable{
 
         fileSize = http.getContentLength(); //Bytes
 
-        fileType = contentType.split("/")[1];
+        ext = this.contentType.split("/")[1];
 
 //        System.out.println("File Name : "+fileName);
 //        System.out.println("File Size : "+ fileSize +"Bytes");
-//        System.out.println("File type : "+ fileType);
+//        System.out.println("File type : "+ ext);
 //
 //        System.out.println("Headers ");
 //        System.out.println("/////////////////////////");
@@ -205,16 +207,24 @@ public class DownloadDTO implements Runnable{
         return fileName;
     }
 
-    public String getFileType() {
-        return fileType;
+    public String getExt() {
+        return ext;
     }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setExt(String ext) {
+        this.ext = ext;
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     @Override
@@ -275,6 +285,8 @@ public class DownloadDTO implements Runnable{
                 System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedSize/fileSize * 100));
                 System.out.println("Download completed!");
                 completed = true;
+
+                AdminController.TASK_SCHEDULER.notifyDownloadFinish(this);
             }
 
             bout.flush();

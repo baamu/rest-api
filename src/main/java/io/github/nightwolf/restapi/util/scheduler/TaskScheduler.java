@@ -13,6 +13,7 @@ import io.github.nightwolf.restapi.util.manager.RepositoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 @Component(value = "taskScheduler")
 public class TaskScheduler {
 
-    private static final DownloadManager DOWNLOAD_MANAGER = new DownloadManager();
     private static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
 
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
@@ -58,17 +58,17 @@ public class TaskScheduler {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
-    @Autowired
-    @Qualifier(value = "downloadRepository")
-    private static DownloadRepository downloadRepository;
+    private final DownloadManager downloadManager;
+
+
 
     @Autowired
     @Qualifier(value = "userRepository")
-    private static UserRepository userRepository;
+    private UserRepository userRepository;
 
     private DownloadTypeRepository downloadTypeRepository;
-
     private TempDownloadRepository tempDownloadRepository;
+    private DownloadRepository downloadRepository;
 
     private String documentRepoPath;
     private String imgRepoPath;
@@ -101,9 +101,11 @@ public class TaskScheduler {
     }
 
     @Autowired
-    public TaskScheduler(@Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository) {
+    public TaskScheduler(@Qualifier("downloadRepository") @Autowired DownloadRepository downloadRepository, @Autowired @Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Autowired @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository, @Autowired DownloadManager downloadManager) {
         this.downloadTypeRepository = downloadTypeRepository;
         this.tempDownloadRepository = tempDownloadRepository;
+        this.downloadManager = downloadManager;
+        this.downloadRepository = downloadRepository;
 
         documentRepoPath = downloadTypeRepository.findByFileType("documents").getDefaultPath();
         imgRepoPath = downloadTypeRepository.findByFileType("images").getDefaultPath();
@@ -160,7 +162,7 @@ public class TaskScheduler {
 
         tempDownloadRepository.findAll().forEach(tempDownload -> {
             try {
-                DOWNLOAD_MANAGER.addDownload(
+                downloadManager.addToQueue(
                         new DownloadDTO(
                                 tempDownload.getId()+"",
                                 tempDownload.getUser().getEmail(),
@@ -178,26 +180,27 @@ public class TaskScheduler {
     }
 
     public void startDownloads() {
-        DOWNLOAD_MANAGER.start();
+        downloadManager.start();
     }
 
     public void terminateDownloads() {
-        DOWNLOAD_MANAGER.stop();
+        downloadManager.stop();
     }
 
     public void addDownload(DownloadDTO downloadDTO) {
-        DOWNLOAD_MANAGER.addDownload(downloadDTO);
+        downloadManager.addDownload(downloadDTO);
     }
 
     public boolean removeDownload(DownloadDTO downloadDTO) {
-        return DOWNLOAD_MANAGER.removeDownload(downloadDTO);
+        return downloadManager.removeDownload(downloadDTO);
     }
 
     public Queue<DownloadDTO> getDownloadsQueue() {
-        return DOWNLOAD_MANAGER.getDownloadsQueue();
+        return downloadManager.getDownloadsQueue();
     }
 
     //remove downloadDTO from queue and temp_download table and add to download table
+    @Transactional
     public void notifyDownloadFinish(DownloadDTO downloadDTO) {
         Download download = new Download();
         try {
@@ -206,10 +209,10 @@ public class TaskScheduler {
             download.setAddedDate(new Date());
         }
 
-        DOWNLOAD_MANAGER.removeDownload(downloadDTO);
+        downloadManager.removeDownload(downloadDTO);
 
         User user = userRepository.findById(downloadDTO.getUserId()).orElse(null);
-        DownloadType type = downloadTypeRepository.findByFileType(downloadDTO.getFileType());
+        DownloadType type = downloadTypeRepository.findByFileType(downloadManager.getType(downloadDTO.getContentType()));
 
         download.setDownloadedDate(new Date());
         download.setFileSize(downloadDTO.getFileSize());
@@ -225,9 +228,9 @@ public class TaskScheduler {
     }
 
     //remove downloadDTO from queue and add back
-    public static void notifyInterruptedDownload(DownloadDTO downloadDTO) {
-        DOWNLOAD_MANAGER.removeDownload(downloadDTO);
-        DOWNLOAD_MANAGER.addDownload(downloadDTO);
+    public void notifyInterruptedDownload(DownloadDTO downloadDTO) {
+        downloadManager.removeDownload(downloadDTO);
+        downloadManager.addDownload(downloadDTO);
     }
 
     @Override
