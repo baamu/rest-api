@@ -75,7 +75,7 @@
 2) Implement copy files from repository ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square)
 3) Save added downloads in temp_download ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 4) Fix setting download paths in a different property file ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
-5) Implement notifying after each download finishes ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square)
+5) Implement notifying after each download finishes ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 6) Move the data to download table from temp_download after download finished ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 7) Implement downloading to the proper directory based on the file type ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 8) Add repository check/clean scheduling ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square) ![alt](https://img.shields.io/badge/State-On_Going-Green?style=flat-square)

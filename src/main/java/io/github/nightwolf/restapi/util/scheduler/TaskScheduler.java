@@ -8,10 +8,12 @@ import io.github.nightwolf.restapi.repository.DownloadRepository;
 import io.github.nightwolf.restapi.repository.DownloadTypeRepository;
 import io.github.nightwolf.restapi.repository.TempDownloadRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
+import io.github.nightwolf.restapi.service.EmailSenderService;
 import io.github.nightwolf.restapi.util.manager.DownloadManager;
 import io.github.nightwolf.restapi.util.manager.RepositoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +72,8 @@ public class TaskScheduler {
     private TempDownloadRepository tempDownloadRepository;
     private DownloadRepository downloadRepository;
 
+    private EmailSenderService emailSenderService;
+
     private String documentRepoPath;
     private String imgRepoPath;
     private String audRepoPath;
@@ -101,11 +105,13 @@ public class TaskScheduler {
     }
 
     @Autowired
-    public TaskScheduler(@Qualifier("downloadRepository") @Autowired DownloadRepository downloadRepository, @Autowired @Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Autowired @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository, @Autowired DownloadManager downloadManager) {
+    public TaskScheduler(@Autowired EmailSenderService emailSenderService, @Qualifier("downloadRepository") @Autowired DownloadRepository downloadRepository, @Autowired @Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Autowired @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository, @Autowired DownloadManager downloadManager) {
         this.downloadTypeRepository = downloadTypeRepository;
         this.tempDownloadRepository = tempDownloadRepository;
         this.downloadManager = downloadManager;
         this.downloadRepository = downloadRepository;
+
+        this.emailSenderService = emailSenderService;
 
         documentRepoPath = downloadTypeRepository.findByFileType("documents").getDefaultPath();
         imgRepoPath = downloadTypeRepository.findByFileType("images").getDefaultPath();
@@ -225,12 +231,33 @@ public class TaskScheduler {
         downloadRepository.save(download);
 
         tempDownloadRepository.deleteByUrl(downloadDTO.getUrl().toString());
+
+        System.out.println("Notifying : " + downloadDTO.getUserId());
+
+        notifyUser(downloadDTO.getUserId(), downloadDTO.getFileName(), downloadDTO.getAddedDate(), download.getDownloadedDate().toString());
+
     }
 
     //remove downloadDTO from queue and add back
     public void notifyInterruptedDownload(DownloadDTO downloadDTO) {
         downloadManager.removeDownload(downloadDTO);
         downloadManager.addDownload(downloadDTO);
+    }
+
+    public void notifyUser(String email, String fileName, String addedDate, String downloaded) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject("Download Completion");
+        mailMessage.setFrom("nightwolfdownloader@gmail.com");
+        mailMessage.setText("The following download has been finished downloading\r\n"
+                + "File Name : " + fileName + "\r\n"
+                + "Added Date : " + addedDate + "\r\n"
+                + "Downloaded Date : " + downloaded + "\r\n\r\n"
+                + "If this download was not added by you, please inform an administrator or send an email to : "
+                + "nightwolfdownloader@gmail.com\r\n"
+        );
+
+        emailSenderService.sendEmail(mailMessage);
     }
 
     @Override
