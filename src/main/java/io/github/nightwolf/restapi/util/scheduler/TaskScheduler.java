@@ -63,7 +63,6 @@ public class TaskScheduler {
     private final DownloadManager downloadManager;
 
 
-
     @Autowired
     @Qualifier(value = "userRepository")
     private UserRepository userRepository;
@@ -121,7 +120,6 @@ public class TaskScheduler {
         othrRepoPath = downloadTypeRepository.findByFileType("other").getDefaultPath();
 
         initialize();
-        populateUncompletedDownloads();
     }
 
     private void initialize() {
@@ -164,7 +162,7 @@ public class TaskScheduler {
 
     }
 
-    private void populateUncompletedDownloads() {
+    public void populateUncompletedDownloads() {
 
         tempDownloadRepository.findAll().forEach(tempDownload -> {
             try {

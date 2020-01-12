@@ -26,6 +26,7 @@ public class AdminController {
     @Autowired
     AdminController(TaskScheduler taskScheduler) {
         TASK_SCHEDULER = taskScheduler;
+        TASK_SCHEDULER.populateUncompletedDownloads();
     }
 
     @GetMapping("/download/start")

@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
 @Component("downloadManager")
 public class DownloadManager {
 
-    private ThreadPoolExecutor downloader = null;
+    private volatile ThreadPoolExecutor downloader = null;
     private Queue<DownloadDTO> downloadsQueue = null;
 
     private SimpleDateFormat format;
 
-    private boolean isStarted = false;
+    private volatile boolean isStarted = false;
 
     private TempDownloadRepository tempDownloadRepository;
     private DownloadTypeRepository downloadTypeRepository;
@@ -118,36 +118,40 @@ public class DownloadManager {
     }
 
     private void setDownloads() {
-        downloader.getQueue().addAll(downloadsQueue);
-    }
-
-    private void updateUnfinished(List<DownloadDTO> unfinishedDownloads) {
-        //update the database
+        for(DownloadDTO download : downloadsQueue) {
+            downloader.getQueue().add(download);
+        }
     }
 
     public void start() {
-        init();
-        setDownloads();
+        if(!isStarted) {
+            System.out.println("Downloading starting");
+            init();
+            setDownloads();
+            System.out.println("Downloading started at : " + new Date());
+            isStarted = true;
+        }
     }
 
     public void stop() {
-        List<DownloadDTO> unfinishedDownloads;
+        List<DownloadDTO> unfinishedDownloads = null;
 
         if(downloader != null) {
             try{
-                downloader.shutdown();
-                downloader.awaitTermination(5,TimeUnit.SECONDS);
-            } catch (InterruptedException ex) {
-                System.out.println("Interrupted");
-            }finally {
-                unfinishedDownloads = downloader.shutdownNow()
-                        .stream()
-                        .map(runnable -> (DownloadDTO)runnable)
-                        .collect(Collectors.toList());
 
-                updateUnfinished(unfinishedDownloads);
+                downloader.shutdown();
+                downloader.awaitTermination(1,TimeUnit.SECONDS);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+
+                for(DownloadDTO downloadDTO : downloadsQueue) {
+                    downloadDTO.exit();         //set isExit true so that downloading will stop
+                }
 
                 downloader = null;      //remove the downloader
+                isStarted = false;
 
                 System.out.println("Downloads Shut Down Successfully!");
             }
@@ -176,4 +180,5 @@ public class DownloadManager {
             return "other";
         }
     }
+
 }

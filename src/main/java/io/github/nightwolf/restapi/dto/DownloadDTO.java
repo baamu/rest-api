@@ -90,11 +90,16 @@ public class DownloadDTO implements Runnable{
         this.fileSize = fileSize;
         this.added_date = added_date;
         this.lastModified = lastModified;
-//        this.fileName = fileName;
-//
-//        downloadFile = new File(documentPath +File.separator+fileName);
+        this.fileName = fileName;
+
         String d[] = fileName.split("\\.");
         ext = d[d.length-1];
+
+        try {
+            setMetaData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setMetaData() throws IOException {
@@ -113,10 +118,10 @@ public class DownloadDTO implements Runnable{
                 fileName = urlData[urlData.length - 1];
             }
 
-            documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(this.contentType);
+            fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
         }
 
-        fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
+        documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(this.contentType);
 
         downloadFile = new File(documentPath +File.separator+fileName);
 
@@ -263,7 +268,7 @@ public class DownloadDTO implements Runnable{
                 http.setRequestProperty("If-Range", lastModified);
             }
 
-            while ( !isExit && (read = inputStream.read(buffer)) != -1) {
+            while (!isExit && (read = inputStream.read(buffer)) != -1) {
                 bout.write(buffer,0,read);
                 downloadedSize += read;
                 readSize += read;
@@ -281,6 +286,7 @@ public class DownloadDTO implements Runnable{
 
             if(isExit) {
                 System.out.println("Download Stopped!");
+                isExit = false;
             } else {
                 System.out.println(String.format("Downloaded %.2f/%.2f (MB): %.2f%%",downloadedSize/(1024*1024),fileSize/(1024*1024),downloadedSize/fileSize * 100));
                 System.out.println("Download completed!");
