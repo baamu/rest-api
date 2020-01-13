@@ -117,13 +117,13 @@ public class DownloadDTO implements Runnable{
                 String[] urlData = url.getFile().split("/");
                 fileName = urlData[urlData.length - 1];
             }
-
-            fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
         }
+
+        fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "");
 
         documentPath = AdminController.TASK_SCHEDULER.getDownloadPath(this.contentType);
 
-        downloadFile = new File(documentPath +File.separator+fileName);
+        downloadFile = new File(documentPath,fileName);
 
         fileSize = http.getContentLength(); //Bytes
 
@@ -254,16 +254,19 @@ public class DownloadDTO implements Runnable{
             http.addRequestProperty("User-Agent", "Mozilla/4.76");
             BufferedInputStream inputStream = new BufferedInputStream(http.getInputStream());
             FileOutputStream fout = new FileOutputStream(downloadFile);
-            BufferedOutputStream bout = new BufferedOutputStream(fout,1024 * 1024 * 100);
-            byte[] buffer = new byte[1024 * 1024 * 5];
+            BufferedOutputStream bout = new BufferedOutputStream(fout,1024 * 64);
+            byte[] buffer = new byte[1024];
             int read = 0;
             int readSize = 0;
 
-            long bytes = downloadFile.getAbsoluteFile().length();
+            long bytes = downloadFile.length();
+
+            System.out.println("Bytes : " + bytes);
 
             //check whether the file was partially downloaded before
             if(bytes > 0L) {
                 downloadedSize = bytes;
+                System.out.println("Downloaded size : " + downloadedSize);
                 http.setRequestProperty("Range", "bytes="+bytes+"-");
                 http.setRequestProperty("If-Range", lastModified);
             }
@@ -273,9 +276,9 @@ public class DownloadDTO implements Runnable{
                 downloadedSize += read;
                 readSize += read;
 
-                if(readSize >= 1024 * 1024 * 100)     //flushes data on each 100MB
+                if(readSize >= 1024 * 64)     //flushes data on each 64KB
                 {
-                    readSize+=0;
+                    readSize=0;
                     bout.flush();
                 }
 
