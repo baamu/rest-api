@@ -197,6 +197,10 @@ public class PublicController {
         String mimeType = request.getServletContext().getMimeType(file.getAbsolutePath());
 
         System.out.println(" MIME Type : " + mimeType);
+
+        download.setUsedTimes(download.getUsedTimes() + 1);
+        downloadRepository.save(download);
+
         try {
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(mimeType))
