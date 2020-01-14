@@ -72,7 +72,7 @@
 
 ## TODO :
 1) Implement repository search per client request ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
-2) Implement copy files from repository ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square)
+2) Implement copy files from repository ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 3) Implement stop downloading ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 4) Implement automatically start/stop downloading in the given time frame ![alt](https://img.shields.io/badge/Priority-High-Red?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 5) Save added downloads in temp_download ![alt](https://img.shields.io/badge/Priority-Moderate-orange?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
@@ -83,5 +83,4 @@
 10) Implement downloading to the proper directory based on the file type ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 11) Test against incoming new download requests to the queue (while downloads has started) ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square) ![alt](https://img.shields.io/badge/State-Fixed-Blue?style=flat-square)
 12) Test resuming paused downloads ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square) ![alt](https://img.shields.io/badge/State-On_Going-Green?style=flat-square)
-13) Fix property file reading ![alt](https://img.shields.io/badge/Priority-Low-yellow?style=flat-square)
 

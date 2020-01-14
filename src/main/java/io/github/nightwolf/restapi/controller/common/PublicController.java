@@ -5,10 +5,7 @@ import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
-import io.github.nightwolf.restapi.entity.ConfirmationToken;
-import io.github.nightwolf.restapi.entity.DownloadType;
-import io.github.nightwolf.restapi.entity.TempUser;
-import io.github.nightwolf.restapi.entity.User;
+import io.github.nightwolf.restapi.entity.*;
 import io.github.nightwolf.restapi.repository.*;
 import io.github.nightwolf.restapi.service.EmailSenderService;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -16,15 +13,23 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,9 +42,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/public")
 public class PublicController {
-
-    //for testing
-    public static List<DownloadDTO> downloads = new ArrayList<>();
 
     @Value("${server.address}")
     private String ip;
@@ -175,11 +177,38 @@ public class PublicController {
             return null;
         }
 
-        return downloadRepository.findAllByType(directory, PageRequest.of(page, 10))
+        return downloadRepository.findAllByType(type, PageRequest.of(page-1, 10))
                 .stream()
                 .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("repository/get")
+    @ResponseBody
+    public ResponseEntity getFileFromRepository(@RequestParam(value = "id", defaultValue = "-1") long fileId, HttpServletRequest request) {
+        if(fileId == -1)
+            return ResponseEntity.badRequest().body("File id needs to be given");
+
+        Download download = downloadRepository.findById(fileId).orElse(null);
+        if(download == null)
+            return ResponseEntity.notFound().build();
+
+        File file = new File(download.getType().getDefaultPath(), download.getName());
+        String mimeType = request.getServletContext().getMimeType(file.getAbsolutePath());
+
+        System.out.println(" MIME Type : " + mimeType);
+        try {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .header(HttpHeaders.CONTENT_LENGTH, file.length()+"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                    .body(Files.readAllBytes(file.toPath()));
+        } catch (IOException e) {
+            return null;
+        }
+
+    }
+
 
 
     /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
