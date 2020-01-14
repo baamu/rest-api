@@ -13,8 +13,6 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,10 +23,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,13 +169,6 @@ public class PublicController {
     @ResponseBody
     public List<DownloadHistoryDTO> getDownloadedFiles(@PathVariable String dir, @RequestParam(value = "page", defaultValue = "1") int page) {
         DownloadType type = downloadTypeRepository.findByFileType(dir);
-        int directory;
-
-        if(type != null) {
-            directory = type.getId();
-        } else {
-            return null;
-        }
 
         return downloadRepository.findAllByType(type, PageRequest.of(page-1, 10))
                 .stream()
@@ -275,8 +268,8 @@ public class PublicController {
     /**
      * @return On going downloads of the user
      */
-    //get all downloads of the service (previous downloads and waiting/ongoing downloads)
-    @GetMapping("/download/getall")
+    //get all downloads of the service (waiting/ongoing downloads)
+    @GetMapping("/download/get-all")
     @ResponseBody
     public List<DownloadDTO> getAllDownloads() {
         //test code
@@ -293,9 +286,9 @@ public class PublicController {
      * @return downloaded size of the file
      */
     //get the downloaded percentage of a download
-    @GetMapping("/download/getpercent/{id}")
+    @GetMapping("/download/get-percent")
     @ResponseBody
-    public double getDownloadPercent(@PathVariable String id) {
+    public double getDownloadPercent(@RequestParam(name = "id", defaultValue = "-1") String id) {
         //test code
         List<DownloadDTO> downloads = new ArrayList<>(AdminController.TASK_SCHEDULER.getDownloadsQueue());
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
@@ -316,19 +309,6 @@ public class PublicController {
                 .collect(Collectors.toList());
     }
 
-    //this is only for testing
-//    @GetMapping("/download/start")
-//    @ResponseBody
-//    public BasicReplyDTO startDownloads() {
-//        String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-//
-//        downloads.stream()
-//                .filter(downloadDTO -> downloadDTO.getUserId().equals(id))
-//                .collect(Collectors.toList())
-//                .forEach(DownloadDTO::run);
-//
-//        return new BasicReplyDTO("Downloads started!");
-//    }
 
     private String getYoutubeTitle(String link) {
         try {
@@ -345,8 +325,6 @@ public class PublicController {
         StringBuilder contents = new StringBuilder();
         try {
             conn = (HttpURLConnection) new URL(link).openConnection();
-//            conn.setConnectTimeout(CONNECT_TIMEOUT);
-//            conn.setReadTimeout(READ_TIMEOUT);
 
             InputStream is = conn.getInputStream();
 

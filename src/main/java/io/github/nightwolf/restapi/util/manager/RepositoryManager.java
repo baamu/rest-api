@@ -16,8 +16,7 @@ public class RepositoryManager {
 
     private static boolean isCleaning = false;
 
-    //test
-    Path repoPath = Paths.get(SecurityConstants.REPOSITORY_BASE_PATH);
+    private Path repoPath = Paths.get(SecurityConstants.REPOSITORY_BASE_PATH);
 
     public RepositoryManager() {
         try {
@@ -39,6 +38,7 @@ public class RepositoryManager {
 
     public void startCleaning() {
         isCleaning = true;
+        System.out.println("Start repo cleaning");
     }
 
     public void stopCleaning() {
@@ -47,6 +47,7 @@ public class RepositoryManager {
         }
 
         isCleaning = false;
+        System.out.println("Stopping repo cleaning");
     }
 
 

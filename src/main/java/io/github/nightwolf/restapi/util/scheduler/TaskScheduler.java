@@ -36,8 +36,6 @@ import java.util.concurrent.TimeUnit;
 @Component(value = "taskScheduler")
 public class TaskScheduler {
 
-    private static final RepositoryManager REPOSITORY_MANAGER = new RepositoryManager();
-
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
 
     private static final int DOWNLOAD_START_HOUR = 0;
@@ -61,6 +59,7 @@ public class TaskScheduler {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
     private final DownloadManager downloadManager;
+    private final RepositoryManager repositoryManager = new RepositoryManager();
 
 
     @Autowired
@@ -120,6 +119,7 @@ public class TaskScheduler {
         othrRepoPath = downloadTypeRepository.findByFileType("other").getDefaultPath();
 
         initialize();
+        initCleaning();
     }
 
     private void initialize() {
@@ -160,6 +160,45 @@ public class TaskScheduler {
             }
         }, endDelay, TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
 
+    }
+
+    private void initCleaning() {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of(ZONE_ID));
+        ZonedDateTime nextDownloadStart = now.withHour(CLEANING_START_HOUR)
+                .withMinute(CLEANING_START_MIN)
+                .withSecond(CLEANING_START_SEC);
+
+        ZonedDateTime nextDownloadEnd = now.withHour(CLEANING_END_HOUR)
+                .withMinute(CLEANING_END_MIN)
+                .withSecond(CLEANING_END_SEC);
+
+        if(now.compareTo(nextDownloadStart) > 0) {
+            nextDownloadStart = nextDownloadStart.plusDays(1);
+        }
+
+        if(now.compareTo(nextDownloadEnd) > 0) {
+            nextDownloadEnd = nextDownloadEnd.plusDays(1);
+        }
+
+        Duration startDuration = Duration.between(now, nextDownloadStart);
+        Duration endDuration = Duration.between(now, nextDownloadEnd);
+
+        long startDelay = startDuration.getSeconds();
+        long endDelay = endDuration.getSeconds();
+
+        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                repositoryManager.startCleaning();
+            }
+        }, startDelay, TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+
+        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                repositoryManager.stopCleaning();
+            }
+        }, endDelay, TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
     }
 
     public void populateUncompletedDownloads() {

@@ -1,6 +1,5 @@
 package io.github.nightwolf.restapi.util.manager;
 
-import io.github.nightwolf.restapi.controller.admin.AdminController;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.entity.DownloadType;
 import io.github.nightwolf.restapi.entity.TempDownload;
