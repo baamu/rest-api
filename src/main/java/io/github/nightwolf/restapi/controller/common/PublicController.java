@@ -13,6 +13,9 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,12 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -180,7 +185,7 @@ public class PublicController {
     @ResponseBody
     public ResponseEntity getFileFromRepository(@RequestParam(value = "id", defaultValue = "-1") long fileId, HttpServletRequest request) {
         if(fileId == -1)
-            return ResponseEntity.badRequest().body("File id needs to be given");
+            return ResponseEntity.badRequest().build();
 
         Download download = downloadRepository.findById(fileId).orElse(null);
         if(download == null)
@@ -195,13 +200,22 @@ public class PublicController {
         downloadRepository.save(download);
 
         try {
+            HttpHeaders header = new HttpHeaders();
+            header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
+            header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            header.add("Pragma", "no-cache");
+            header.add("Expires", "0");
+
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             return ResponseEntity.ok()
+                    .headers(header)
                     .contentType(MediaType.parseMediaType(mimeType))
-                    .header(HttpHeaders.CONTENT_LENGTH, file.length()+"")
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                    .body(Files.readAllBytes(file.toPath()));
+                    .contentLength(file.length())
+                    .body(resource);
+
+
         } catch (IOException e) {
-            return null;
+            return ResponseEntity.notFound().build();
         }
 
     }
