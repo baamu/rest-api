@@ -175,7 +175,7 @@ public class PublicController {
     public List<DownloadHistoryDTO> getDownloadedFiles(@PathVariable String dir, @RequestParam(value = "page", defaultValue = "1") int page) {
         DownloadType type = downloadTypeRepository.findByFileType(dir);
 
-        return downloadRepository.findAllByType(type, PageRequest.of(page-1, 10))
+        return downloadRepository.findAllByType(type, PageRequest.of(page-1, 1000))
                 .stream()
                 .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
@@ -236,9 +236,10 @@ public class PublicController {
     @ResponseBody
     public BasicReplyDTO addDownload(@RequestBody DownloadRequestDTO downloadRequestDTO) {
         String link = downloadRequestDTO.getUrl();
+        System.out.println(link);
 
-        if(link.isEmpty()) {
-            return new BasicReplyDTO("Error! Download URL failed!");
+        if(link == null || link.isEmpty()) {
+            return new BasicReplyDTO("Error! Download URL is null!");
         }
 
         System.out.println("URL : "+ link);
@@ -398,7 +399,7 @@ public class PublicController {
                     if (linkMatch.find()) {
                         url = linkMatch.group(1);
                         try {
-                            url = URLDecoder.decode(url, "UTF8");
+                            url = URLDecoder.decode(url, "UTF-8");
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
