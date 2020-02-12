@@ -59,7 +59,7 @@ public class TaskScheduler {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
     private final DownloadManager downloadManager;
-    private final RepositoryManager repositoryManager = new RepositoryManager();
+    private final RepositoryManager repositoryManager;
 
 
     @Autowired
@@ -106,8 +106,10 @@ public class TaskScheduler {
     public TaskScheduler(@Autowired EmailSenderService emailSenderService, @Qualifier("downloadRepository") @Autowired DownloadRepository downloadRepository, @Autowired @Qualifier("downloadTypeRepository") DownloadTypeRepository downloadTypeRepository, @Autowired @Qualifier("tempDownloadRepository") TempDownloadRepository tempDownloadRepository, @Autowired DownloadManager downloadManager) {
         this.downloadTypeRepository = downloadTypeRepository;
         this.tempDownloadRepository = tempDownloadRepository;
-        this.downloadManager = downloadManager;
         this.downloadRepository = downloadRepository;
+
+        this.downloadManager = downloadManager;
+        this.repositoryManager = new RepositoryManager(downloadRepository, downloadTypeRepository);
 
         this.emailSenderService = emailSenderService;
 
@@ -295,6 +297,10 @@ public class TaskScheduler {
         );
 
         emailSenderService.sendEmail(mailMessage);
+    }
+
+    public RepositoryManager getRepositoryManager() {
+        return repositoryManager;
     }
 
     @Override

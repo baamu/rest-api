@@ -2,9 +2,12 @@ package io.github.nightwolf.restapi.controller.admin;
 
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
+import io.github.nightwolf.restapi.repository.DownloadRepository;
+import io.github.nightwolf.restapi.util.manager.RepositoryManager;
 import io.github.nightwolf.restapi.util.scheduler.TaskScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,6 +21,11 @@ import java.util.List;
 public class AdminController {
 
     public static TaskScheduler TASK_SCHEDULER;
+    private final RepositoryManager repositoryManager;
+
+    @Autowired
+    @Qualifier(value = "downloadRepository")
+    private DownloadRepository downloadRepository;
 
     static {
         System.setProperty("http.agent", "Chrome");
@@ -27,6 +35,7 @@ public class AdminController {
     AdminController(TaskScheduler taskScheduler) {
         TASK_SCHEDULER = taskScheduler;
         TASK_SCHEDULER.populateUncompletedDownloads();
+        repositoryManager = TASK_SCHEDULER.getRepositoryManager();
     }
 
     @GetMapping("/download/start")
@@ -57,6 +66,17 @@ public class AdminController {
         return TASK_SCHEDULER.removeDownload(download)
                 ? new BasicReplyDTO("Download terminated!")
                 : new BasicReplyDTO("Download termination failed!");
+    }
+
+    @GetMapping("/repository/delete")
+    @Transactional
+    @ResponseBody
+    public BasicReplyDTO deleteFile(@RequestParam("id") long id) {
+        if(repositoryManager.deleteFile(id)) {
+            return new BasicReplyDTO("File deleted successfully");
+        } else {
+            return new BasicReplyDTO("File deletion failed!");
+        }
     }
 
 }
