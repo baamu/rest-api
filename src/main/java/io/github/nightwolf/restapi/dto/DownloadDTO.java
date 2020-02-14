@@ -312,4 +312,6 @@ public class DownloadDTO implements Runnable{
     public void exit() {
         isExit = true;
     }
+
+    public void resume() { isExit = false; }
 }

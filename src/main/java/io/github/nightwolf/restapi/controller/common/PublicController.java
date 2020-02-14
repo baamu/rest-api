@@ -13,9 +13,7 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,14 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -280,6 +275,33 @@ public class PublicController {
         return AdminController.TASK_SCHEDULER.removeDownload(download) ? new BasicReplyDTO("Success") : new BasicReplyDTO("Failed!");
     }
 
+    @GetMapping("download/remove")
+    @ResponseBody
+    public BasicReplyDTO removeDownload(@RequestParam("id") String id) {
+
+        String user_id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
+        try {
+            DownloadDTO down = AdminController.TASK_SCHEDULER.getDownloadsQueue()
+                    .stream()
+                    .filter(downloadDTO -> downloadDTO.getId().equals(id))
+                    .collect(Collectors.toList()).get(0);
+
+            if (!down.getUserId().equals(user_id)) {
+                return new BasicReplyDTO("Failed to delete!");
+            }
+
+            boolean bool = AdminController.TASK_SCHEDULER.removeDownload(down);
+            if(!bool) {
+                return new BasicReplyDTO("Failed to delete!");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new BasicReplyDTO("Failed to delete!");
+        }
+
+        return new BasicReplyDTO("Deleted!");
+    }
+
     /**
      * @return On going downloads of the user
      */
@@ -304,7 +326,6 @@ public class PublicController {
     @GetMapping("/download/get-percent")
     @ResponseBody
     public double getDownloadPercent(@RequestParam(name = "id", defaultValue = "-1") String id) {
-        //test code
         List<DownloadDTO> downloads = new ArrayList<>(AdminController.TASK_SCHEDULER.getDownloadsQueue());
         return downloads.get(downloads.indexOf(new DownloadDTO(id))).getDownloadedSize();
     }

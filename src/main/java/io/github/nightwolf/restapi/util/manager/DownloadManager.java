@@ -158,6 +158,25 @@ public class DownloadManager {
         }
     }
 
+    public void pause(DownloadDTO downloadDTO) {
+        if(downloader.getQueue().contains(downloadDTO)) {
+            DownloadDTO dto = getDownload(downloadDTO);
+            dto.exit();
+            downloader.getQueue().remove(dto);
+        }
+    }
+
+    public void resume(DownloadDTO downloadDTO) {
+        if(!downloader.getQueue().contains(downloadDTO)) {
+            DownloadDTO dto = getDownload(downloadDTO);
+            dto.resume();
+
+            if(isStarted) {
+                downloader.execute(dto);
+            }
+        }
+    }
+
     public String getType(String contentType) {
         if (contentType.contains("image/")) {
             return "images";

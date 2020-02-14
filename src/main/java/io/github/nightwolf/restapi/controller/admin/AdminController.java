@@ -21,7 +21,6 @@ import java.util.List;
 public class AdminController {
 
     public static TaskScheduler TASK_SCHEDULER;
-    private final RepositoryManager repositoryManager;
 
     @Autowired
     @Qualifier(value = "downloadRepository")
@@ -35,21 +34,17 @@ public class AdminController {
     AdminController(TaskScheduler taskScheduler) {
         TASK_SCHEDULER = taskScheduler;
         TASK_SCHEDULER.populateUncompletedDownloads();
-        repositoryManager = TASK_SCHEDULER.getRepositoryManager();
     }
 
     @GetMapping("/download/start")
     @ResponseBody
     public BasicReplyDTO startAllDownloads() {
-//        PublicController.downloads.forEach(DownloadDTO::run);
-
         TASK_SCHEDULER.startDownloads();
         return new BasicReplyDTO("Downloads started!");
     }
 
     @GetMapping("/download/get-all")
     public List<DownloadDTO> getAllOnGoingDownloads() {
-//        return PublicController.downloads;
         return new ArrayList<>(TASK_SCHEDULER.getDownloadsQueue());
     }
 
@@ -68,11 +63,27 @@ public class AdminController {
                 : new BasicReplyDTO("Download termination failed!");
     }
 
+    @PostMapping("/download/pause")
+    @ResponseBody
+    public BasicReplyDTO pauseDownload(@RequestBody DownloadDTO downloadDTO) {
+        TASK_SCHEDULER.pauseDownload(downloadDTO);
+
+        return new BasicReplyDTO("Download paused!");
+    }
+
+    @PostMapping("/download/resume")
+    @ResponseBody
+    public BasicReplyDTO resumeDownload(@RequestBody DownloadDTO downloadDTO) {
+        TASK_SCHEDULER.resumeDownload(downloadDTO);
+
+        return new BasicReplyDTO("Download resumed!");
+    }
+
     @GetMapping("/repository/delete")
     @Transactional
     @ResponseBody
     public BasicReplyDTO deleteFile(@RequestParam("id") long id) {
-        if(repositoryManager.deleteFile(id)) {
+        if(TASK_SCHEDULER.deleteFile(id)) {
             return new BasicReplyDTO("File deleted successfully");
         } else {
             return new BasicReplyDTO("File deletion failed!");

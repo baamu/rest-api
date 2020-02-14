@@ -240,6 +240,10 @@ public class TaskScheduler {
         return downloadManager.removeDownload(downloadDTO);
     }
 
+    public void pauseDownload(DownloadDTO downloadDTO) { downloadManager.pause(downloadDTO); }
+
+    public void resumeDownload(DownloadDTO downloadDTO) { downloadManager.resume(downloadDTO); }
+
     public Queue<DownloadDTO> getDownloadsQueue() {
         return downloadManager.getDownloadsQueue();
     }
@@ -299,8 +303,15 @@ public class TaskScheduler {
         emailSenderService.sendEmail(mailMessage);
     }
 
-    public RepositoryManager getRepositoryManager() {
-        return repositoryManager;
+
+    /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +                                                               +
+    +               Repository Manager                              +
+    +                                                               +
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    public boolean deleteFile(long id) {
+        return repositoryManager.deleteFile(id);
     }
 
     @Override
