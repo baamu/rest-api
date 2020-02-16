@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import sun.security.util.SecurityConstants;
 
 @SpringBootApplication
 @EnableJpaRepositories("io.github.nightwolf.restapi.repository")
@@ -37,6 +38,8 @@ public class RestApiApplication {
     @Autowired
     @Qualifier(value = "tempDownloadRepository")
     private TempDownloadRepository tempDownloadRepository;
+
+//    private SecurityConstants constants;
 
 
     @Bean

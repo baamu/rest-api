@@ -62,7 +62,6 @@ public class RepositoryManager {
     }
 
 
-
     public void startCleaning() {
         isCleaning = true;
         System.out.println("Start repo cleaning");

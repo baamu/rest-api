@@ -2,7 +2,10 @@ package io.github.nightwolf.restapi.controller.admin;
 
 import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
+import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
+import io.github.nightwolf.restapi.dto.UserDTO;
 import io.github.nightwolf.restapi.repository.DownloadRepository;
+import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.util.manager.RepositoryManager;
 import io.github.nightwolf.restapi.util.scheduler.TaskScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author oshan
@@ -25,6 +29,10 @@ public class AdminController {
     @Autowired
     @Qualifier(value = "downloadRepository")
     private DownloadRepository downloadRepository;
+
+    @Qualifier(value = "userRepository")
+    @Autowired
+    UserRepository userRepository;
 
     static {
         System.setProperty("http.agent", "Chrome");
@@ -88,6 +96,24 @@ public class AdminController {
         } else {
             return new BasicReplyDTO("File deletion failed!");
         }
+    }
+
+    @GetMapping("/repository/get-all")
+    @ResponseBody
+    public List<DownloadHistoryDTO> getAllFiles() {
+        return downloadRepository.findAll()
+                .stream()
+                .map(DownloadHistoryDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/user/get-all")
+    @ResponseBody
+    public List<UserDTO> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
     }
 
 }
