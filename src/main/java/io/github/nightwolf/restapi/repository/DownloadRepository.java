@@ -15,7 +15,9 @@ import java.util.List;
 
 @Repository(value = "downloadRepository")
 public interface DownloadRepository extends JpaRepository<Download, Long> {
-    List<Download> findFirst25ByUserOrderByDownloadedDateDesc(User user);
+    List<Download> findTop25ByUserOrderByDownloadedDateDesc(User user);
+    List<Download> findByUser(User user);
     List<Download> findTop10ByOrderByUsedTimes();
     List<Download> findAllByType(DownloadType type, Pageable pageable);
+    Download findByUrl(String url);
 }

@@ -4,6 +4,7 @@ import io.github.nightwolf.restapi.dto.BasicReplyDTO;
 import io.github.nightwolf.restapi.dto.DownloadDTO;
 import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.UserDTO;
+import io.github.nightwolf.restapi.entity.User;
 import io.github.nightwolf.restapi.repository.DownloadRepository;
 import io.github.nightwolf.restapi.repository.UserRepository;
 import io.github.nightwolf.restapi.util.manager.RepositoryManager;
@@ -113,6 +114,21 @@ public class AdminController {
         return userRepository.findAll()
                 .stream()
                 .map(UserDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/user/downloads")
+    @ResponseBody
+    public List<DownloadHistoryDTO> getUserDownloads(@RequestParam("id") String userId) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if(user == null) {
+            return new ArrayList<>();
+        }
+
+        return downloadRepository.findByUser(user).
+                stream()
+                .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
     }
 

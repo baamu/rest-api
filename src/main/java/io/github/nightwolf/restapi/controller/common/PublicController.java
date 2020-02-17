@@ -237,6 +237,10 @@ public class PublicController {
             return new BasicReplyDTO("Error! Download URL is null!");
         }
 
+        if(downloadRepository.findByUrl(link) != null ) {
+            return new BasicReplyDTO("Already downloaded in repository!");
+        }
+
         System.out.println("URL : "+ link);
 
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
@@ -276,9 +280,10 @@ public class PublicController {
     }
 
     @GetMapping("download/remove")
+    @Transactional
     @ResponseBody
     public BasicReplyDTO removeDownload(@RequestParam("id") String id) {
-
+        System.out.println(id);
         String user_id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
         try {
             DownloadDTO down = AdminController.TASK_SCHEDULER.getDownloadsQueue()
@@ -338,8 +343,12 @@ public class PublicController {
     @ResponseBody
     public List<DownloadHistoryDTO> getDownloadHistory() {
         String id = (SecurityContextHolder.getContext().getAuthentication().getPrincipal()).toString();
-        User user = userRepository.findById(id).get();
-        return downloadRepository.findFirst25ByUserOrderByDownloadedDateDesc(user)
+        User user = userRepository.findById(id).orElse(null);
+        System.out.println(user);
+        if(user == null)
+            return new ArrayList<>();
+
+        return downloadRepository.findTop25ByUserOrderByDownloadedDateDesc(user)
                 .stream()
                 .map(DownloadHistoryDTO::new)
                 .collect(Collectors.toList());
