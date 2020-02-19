@@ -9,6 +9,7 @@ import io.github.nightwolf.restapi.entity.*;
 import io.github.nightwolf.restapi.repository.*;
 import io.github.nightwolf.restapi.security.SecurityConstants;
 import io.github.nightwolf.restapi.service.EmailSenderService;
+import io.github.nightwolf.restapi.util.manager.DownloadManager;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,14 +244,17 @@ public class PublicController {
             return new BasicReplyDTO("Error! Download URL is null!");
         }
 
-//        System.out.println(SecurityConstants.RESTRICTED_SITES.size());
 
         for(String url : SecurityConstants.RESTRICTED_SITES) {
             if(link.contains(url)) {
                 return new BasicReplyDTO("Downloading is prohibited from " + url);
             }
+        }
 
-//            System.out.println(url+ " : "+ link);
+        for (DownloadDTO dto : AdminController.TASK_SCHEDULER.getDownloadsQueue()) {
+            if(dto.getUrl().toString().equals(link)) {
+                return new BasicReplyDTO("Already scheduled for downloading!");
+            }
         }
 
         if(downloadRepository.findByUrl(link) != null ) {
