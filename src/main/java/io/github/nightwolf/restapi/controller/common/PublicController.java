@@ -7,6 +7,7 @@ import io.github.nightwolf.restapi.dto.DownloadHistoryDTO;
 import io.github.nightwolf.restapi.dto.DownloadRequestDTO;
 import io.github.nightwolf.restapi.entity.*;
 import io.github.nightwolf.restapi.repository.*;
+import io.github.nightwolf.restapi.security.SecurityConstants;
 import io.github.nightwolf.restapi.service.EmailSenderService;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -75,6 +76,10 @@ public class PublicController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    public PublicController() {
+        System.out.println(SecurityConstants.RESTRICTED_SITES);
+    }
+
     /**
      * @param tempUser user to be registered to the system
      * @return BasicReplyDTO with Success or Fail message
@@ -106,7 +111,7 @@ public class PublicController {
         mailMessage.setFrom("nightwolfdownloader@gmail.com");
         mailMessage.setText("To confirm your account, please click on the below link : "
                 + "http://"
-                +"localhost"
+                +"10.22.166.122"
                 +":"
                 +"8080"
                 +"/api/public/user/confirm-account?token="
@@ -233,8 +238,19 @@ public class PublicController {
         String link = downloadRequestDTO.getUrl();
         System.out.println(link);
 
+
         if(link == null || link.isEmpty()) {
             return new BasicReplyDTO("Error! Download URL is null!");
+        }
+
+//        System.out.println(SecurityConstants.RESTRICTED_SITES.size());
+
+        for(String url : SecurityConstants.RESTRICTED_SITES) {
+            if(link.contains(url)) {
+                return new BasicReplyDTO("Downloading is prohibited from " + url);
+            }
+
+//            System.out.println(url+ " : "+ link);
         }
 
         if(downloadRepository.findByUrl(link) != null ) {
